@@ -1,34 +1,20 @@
 package main
 
 import (
-	"net/http"
+	"context"
 
-	"github.com/gorilla/mux"
+	"github.com/gin-gonic/gin"
+	"github.com/memez-Michalek/"
 )
 
-type product struct{
-	name string
-	quantity int
-	price float64
-	category string
-	id string
-}
-type key struct{
-	id string
-	username string
-	value string
+var (
+	ctx = context.Background()
+)
 
-}
-func generateAPIkeyHandler(w http.ResponseWriter, r * http.Request){
-	
-
-
-
-}
 func main() {
-	router := mux.NewRouter()
-	router.
+	router := gin.Default()
+	router.Get("/", views.IndexView)
 
-
+	router.run(":8080")
 
 }
