@@ -4,7 +4,6 @@ import (
 	"api/controllers"
 	"api/views"
 	"context"
-	
 
 	"github.com/gin-gonic/gin"
 )
@@ -27,6 +26,12 @@ func main() {
 		website.GET("/logout", controllers.LogoutHandler)
 		website.GET("/getapi", controllers.GetApiHandler)
 	}
+	api := router.Group("/api")
+	{
+		api.POST("/login", controllers.LogInToApi)
+
+	}
 
 	router.Run(":8000")
+
 }

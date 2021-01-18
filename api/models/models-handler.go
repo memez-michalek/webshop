@@ -13,5 +13,11 @@ type User struct {
 type JWTAUTH struct {
 	Username string
 	Email    string
+	Apikey   string
 	jwt.StandardClaims
+}
+type APILOGIN struct {
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	Key      string `json:"key"`
 }
