@@ -1,16 +1,17 @@
 package models
 
+import "github.com/dgrijalva/jwt-go"
 
-type Product struct {
-	name     string
-	quantity int
-	price    float64
-	category string
-	id       string
+type User struct {
+	Id       string
+	Username string
+	Email    string
+	Password []byte
+	ApiKeys  []string
 }
 
-type Key struct {
-	id       string
-	username string
-	value    string
+type JWTAUTH struct {
+	Username string
+	Email    string
+	jwt.StandardClaims
 }

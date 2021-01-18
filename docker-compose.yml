@@ -1,24 +1,23 @@
-version: '3.0'
+version: '2.1'
 services:
-    database:
-        image: 'mongo' 
-        container_name: 'mongo-database'
-        environment: 
-            - MONGO_INITDB_DATABASE=database
-            - MONGO_INITDB_ROOT_USERNAME=admin
-            - MONGO_INITDB_ROOT_PASSWORD=admin
-        volumes: 
-            - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
-            - ./mongo-volume:/data/db
-        ports: 
-            - '27017-27019:27017-27019'
+  
+  web:
+    build:
+      context: api
+    ports:
+      - "8000:8000"
+    volumes:
+      - "./api:/app"
+    network_mode: "host"
+  database:
+    image: "mongo"
+    environment: 
+      - MONGO_INTDB_DATABASE="database"
+      - MONGO_INTDB_ROOT_USERNAME="admin"
+      - MONGO_INTDB_ROOT_PASSWORD="admin"
     
-    web:
-        build: .
-        ports:
-            - "8000:8000"
-        volumes:
-            - ".:/app"
-        network_mode: "host"
-            
-               
+    volumes: 
+      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+      - ./mongo-volume:/data/db
+    ports: 
+      - '27017:27017'
