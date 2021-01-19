@@ -24,7 +24,7 @@ func LogInToApi(c *gin.Context) {
 			c.JSON(400, "wrong credentials: "+err.Error())
 		} else {
 			token := webtoken.CreateToken(apiuser.Username, apiuser.Email, apiuser.Key)
-			mainSiteContent := database.Addapi("djdjjd")
+			
 			c.JSON(200, token)
 			
 		}
