@@ -36,3 +36,11 @@ func ErrorChecker(e error) {
 		log.Print(e)
 	}
 }
+
+func IsValid(token string) error{
+	
+	return nil
+
+}
+
+

@@ -21,3 +21,11 @@ type APILOGIN struct {
 	Email    string `json:"email"`
 	Key      string `json:"key"`
 }
+type Product struct{
+	ID string
+	Name string
+	Price float64
+	Description string
+	Brand string
+	Freeshipping bool
+}

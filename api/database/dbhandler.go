@@ -14,23 +14,23 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func initDB() *mongo.Collection {
+func initDB(db string, collection string) *mongo.Collection {
 
-	options := options.Client().ApplyURI("mongodb://database:27017")
+	options := options.Client().ApplyURI("mongodb://localhost:27017")
 	client, err := mongo.Connect(context.TODO(), options)
 	helpers.ErrorChecker(err)
 
 	err = client.Ping(context.TODO(), nil)
 	helpers.ErrorChecker(err)
 
-	collection := client.Database("credentials").Collection("user")
-	return collection
+	output := client.Database(db).Collection(collection)
+	return output
 
 }
 
 func InsertUser(email string, username string, password string) bool {
 	var (
-		collection = initDB()
+		collection = initDB("user", "credentials")
 		user       = new(models.User)
 	)
 	filter := bson.D{{"name", username}, {"email", email}}
@@ -63,9 +63,11 @@ func InsertUser(email string, username string, password string) bool {
 }
 
 func LoginUser(email string, username string, password string) bool {
-	collection := initDB()
-	user := new(models.User)
-	filter := bson.D{{"username", username}, {"email", email}}
+	var (
+		collection = initDB("user", "credentials")
+		user       = new(models.User)
+		filter     = bson.D{{"username", username}, {"email", email}}
+	)
 	log.Print(filter)
 	err := collection.FindOne(context.TODO(), filter).Decode(&user)
 	if err != nil {
@@ -84,10 +86,11 @@ func LoginUser(email string, username string, password string) bool {
 	}
 }
 func AddApi(email string, username string) bool {
-	collection := initDB()
-	user := new(models.User)
-
-	filter := bson.D{{"username", username}, {"email", email}}
+	var (
+		collection = initDB("user", "credentials")
+		user       = new(models.User)
+		filter = bson.D{{"username", username}, {"email", email}}
+	)
 	log.Print(filter)
 	err := collection.FindOne(context.TODO(), filter).Decode(&user)
 	if err != nil {
@@ -111,14 +114,16 @@ func AddApi(email string, username string) bool {
 	}
 }
 func GetApiKeys(email string, username string) ([]string, error) {
-	collection := initDB()
-	user := new(models.User)
-	filter := bson.M{"username": username, "email": email}
+	var(
+	collection = initDB("user","credentials")
+	user = new(models.User)
+	filter = bson.M{"username": username, "email": email}
+	)
 	err := collection.FindOne(context.TODO(), filter).Decode(&user)
-	if err != nil{
+	if err != nil {
 		log.Print("could not find user")
 		return []string{}, errors.New("could not find any user with such credentials")
-	}else{
+	} else {
 		log.Print("users apis found")
 		return user.ApiKeys, nil
 	}

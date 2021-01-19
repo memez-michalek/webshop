@@ -10,10 +10,11 @@ import (
 )
 
 func ApiLogin(email string, username string, key string) error {
-	collection := initDB()
-	user := new(models.User)
-	filter := bson.M{"username": username, "email": email}
-
+	var(
+	collection = initDB("user","credentials")
+	user = new(models.User)
+	filter = bson.M{"username": username, "email": email}
+	)
 	err := collection.FindOne(context.TODO(), filter).Decode(&user)
 	if err != nil {
 		log.Print("user does not exist")
@@ -26,10 +27,14 @@ func ApiLogin(email string, username string, key string) error {
 			}
 		}
 		return errors.New("could not find such api key")
-
 	}
+}
+func GetMainSiteProducts(){
+	collection := initDB("")
 
 }
+
+
 
 
 

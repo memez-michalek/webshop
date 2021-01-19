@@ -37,28 +37,36 @@ func GetTokenValue(token string) (string, string, string, error) {
 	})
 	if err != nil {
 		log.Print("Token related error")
-		return "", "","", errors.New("token error")
+		return "", "", "", errors.New("token error")
 	}
 	if claim, err := secret.Claims.(*models.JWTAUTH); err {
 		if claim.ExpiresAt < time.Now().Unix() {
-			return "", "", "",errors.New("token expired")
+			return "", "", "", errors.New("token expired")
 		}
 		return claim.Username, claim.Email, claim.Apikey, nil
 	}
 	return "", "", "", errors.New("claim error")
 }
 
-func RenewToken(token string) (string, error){
-	secret, err := jwt.ParseWithClaims(token, new(models.JWTAUTH), func(t *jwt.Token) (interface{}, error) {return SECRETTOKEN, nil})
-	if err != nil{
+func RenewToken(token string) (string) {
+	username, email , apikey, valid := IsValid(token)
+	if valid != nil {
+		return CreateToken(username, email, apikey)
+	}
+	return token
+
+}
+
+func IsValid(token string) (string, string, string, error) {
+	secret, err := jwt.ParseWithClaims(token, new(models.JWTAUTH), func(t *jwt.Token) (interface{}, error) { return SECRETTOKEN, nil })
+	if err != nil {
 		log.Print("bad token")
 	}
 	if claim, err := secret.Claims.(*models.JWTAUTH); err {
-		if claim.ExpiresAt < time.Now().Unix(){
-			return CreateToken(claim.Username, claim.Email, claim.Apikey), errors.New("token was expired")
+		if claim.ExpiresAt < time.Now().Unix() {
+			return claim.Username, claim.Email, claim.Apikey, errors.New("webtoken is expired")
 		}
-		return token, nil
+		return "", "", "", nil
 	}
-	return "", errors.New("error occurred please Create a new token")
-
+	return "", "", "", errors.New("claim error")
 }
