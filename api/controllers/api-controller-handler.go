@@ -36,6 +36,6 @@ func GetProduct(c *gin.Context) {
 	if err != nil{
 		c.JSON(400, "could not bind " + err.Error())
 	}
-	//err := database.GetProducts(product.)
+	
 
 }
