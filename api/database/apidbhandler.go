@@ -1,6 +1,7 @@
 package database
 
 import (
+	"api/errorCodes"
 	"api/models"
 	"context"
 	"errors"
@@ -16,7 +17,7 @@ func QueryShopByApiKey(shops []models.Shop, apiKey string) (models.Shop, error) 
 			return v, nil
 		}
 	}
-	return models.Shop{}, errors.New("shop does not exist")
+	return models.Shop{}, errors.New(errorCodes.SHOPDOESNOTEXIST)
 
 }
 func ApiLogin(email string, username string, key string) error {
@@ -27,8 +28,8 @@ func ApiLogin(email string, username string, key string) error {
 	)
 	err := collection.FindOne(context.TODO(), filter).Decode(&user)
 	if err != nil {
-		log.Print("user does not exist")
-		return errors.New("user does not exist")
+		log.Print(errorCodes.USERDOESNOTEXIST)
+		return errors.New(errorCodes.USERDOESNOTEXIST)
 
 	} else {
 		for i := range user.ApiKeys {
@@ -36,7 +37,7 @@ func ApiLogin(email string, username string, key string) error {
 				return nil
 			}
 		}
-		return errors.New("could not find such api key")
+		return errors.New(errorCodes.COULDNOTFINDAPIKEY)
 	}
 }
 

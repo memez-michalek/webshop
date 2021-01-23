@@ -17,7 +17,7 @@ func LogInToApi(c *gin.Context) {
 	err := c.ShouldBindJSON(&apiuser)
 	log.Print(err)
 	if err != nil {
-		c.JSON(400, "could not bind request with model")
+		c.JSON(400, errorCodes.COULDNOTBIND)
 
 	} else {
 
@@ -34,7 +34,7 @@ func LogInToApi(c *gin.Context) {
 				c.JSON(200, token)
 			} else {
 				log.Print(err)
-				c.JSON(400, "shop has already been logged in")
+				c.JSON(400, errorCodes.USERALREADYLOGGEDIN)
 				c.JSON(400, err)
 			}
 		}
@@ -44,7 +44,7 @@ func MainPage(c *gin.Context) {
 	apiUSER := new(models.APIUSER)
 	err := c.ShouldBind(&apiUSER)
 	if err != nil {
-		c.JSON(400, "could not bind to model"+err.Error())
+		c.JSON(400, errorCodes.COULDNOTBIND)
 	} else {
 		username, email, apikey, err := webtoken.GetTokenValue(apiUSER.Token)
 		if err != nil{
