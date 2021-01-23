@@ -1,6 +1,7 @@
 package webtoken
 
 import (
+	"api/errorCodes"
 	"api/models"
 	"errors"
 	"log"
@@ -11,7 +12,10 @@ import (
 
 var SECRETTOKEN = []byte("he0ErCNloe4J7Id0Ry2SEDg09lKkZkfsRiGsdX_vgEg")
 
-func CreateToken(username string, email string, apikey string) string {
+func CreateToken(username string, email string, apikey string) (string, error) {
+	if username == "" || email == "" || apikey == "" {
+		return "", errors.New(errorCodes.TOKENERROR)
+	}
 
 	data := jwt.NewWithClaims(jwt.SigningMethodHS256, models.JWTAUTH{
 		username,
@@ -31,19 +35,35 @@ func CreateToken(username string, email string, apikey string) string {
 	return token
 
 }
-func GetTokenValue(token string) (string, string, string, error) {
+func GetValidTokenValue(token string) (string, string, string, error) {
 	secret, err := jwt.ParseWithClaims(token, new(models.JWTAUTH), func(token *jwt.Token) (interface{}, error) {
 		return SECRETTOKEN, nil
 	})
 	if err != nil {
 		log.Print("Token related error")
-		return "", "", "", errors.New("token error")
+		return "", "", "", errors.New(errorCodes.TOKENERROR)
 	}
 	if claim, err := secret.Claims.(*models.JWTAUTH); err {
 		if claim.ExpiresAt < time.Now().Unix() {
-			return "", "", "", errors.New("token expired")
+			return "", "", "", errors.New(errorCodes.TOKENEXPIRED)
 		}
 		return claim.Username, claim.Email, claim.Apikey, nil
 	}
-	return "", "", "", errors.New("claim error")
+	return "", "", "", errors.New(errorCodes.CLAIMERROR)
+}
+
+func GetInvalidTokenValue(token string) (string, string, string) {
+	secret, err := jwt.ParseWithClaims(token, new(models.JWTAUTH), func(token *jwt.Token) (interface{}, error) {
+		return SECRETTOKEN, nil
+	})
+	if err != nil {
+		log.Print("Token related error")
+		return "", "", ""
+	}
+	if claim, err := secret.Claims.(*models.JWTAUTH); err {
+
+		return claim.Username, claim.Email, claim.Apikey
+	}
+	return "", "", ""
+
 }

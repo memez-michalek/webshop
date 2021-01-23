@@ -40,6 +40,15 @@ func ApiLogin(email string, username string, key string) error {
 		return errors.New(errorCodes.COULDNOTFINDAPIKEY)
 	}
 }
+func RemoveShop(apiKey string) bool {
+	for i, v := range models.SHOPLIST {
+		if v.ApiKey == apiKey {
+			models.SHOPLIST = append(models.SHOPLIST[:i], models.SHOPLIST[i+1:]...)
+
+		}
+	}
+
+}
 
 /*
 NOTE OUTPUT TYPE MIGHT / WILL CHANGE
