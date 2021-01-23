@@ -3,6 +3,7 @@ package views
 import (
 	"api/database"
 	"api/helpers"
+	"log"
 
 	"github.com/gin-gonic/gin"
 )
@@ -36,6 +37,14 @@ func RegisterView(c *gin.Context) {
 	if !helpers.IsAuthenticated(c) {
 		c.HTML(200, "register-login.html", "")
 	} else {
+		c.Redirect(302, "/")
+	}
+}
+func GetApiView(c *gin.Context) {
+	if helpers.IsAuthenticated(c) {
+		c.HTML(200, "getapi.html", "")
+	} else {
+		log.Print("not authenticated")
 		c.Redirect(302, "/")
 	}
 }

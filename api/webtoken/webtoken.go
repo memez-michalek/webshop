@@ -47,26 +47,3 @@ func GetTokenValue(token string) (string, string, string, error) {
 	}
 	return "", "", "", errors.New("claim error")
 }
-
-func RenewToken(token string) (string) {
-	username, email , apikey, valid := IsValid(token)
-	if valid != nil {
-		return CreateToken(username, email, apikey)
-	}
-	return token
-
-}
-
-func IsValid(token string) (string, string, string, error) {
-	secret, err := jwt.ParseWithClaims(token, new(models.JWTAUTH), func(t *jwt.Token) (interface{}, error) { return SECRETTOKEN, nil })
-	if err != nil {
-		log.Print("bad token")
-	}
-	if claim, err := secret.Claims.(*models.JWTAUTH); err {
-		if claim.ExpiresAt < time.Now().Unix() {
-			return claim.Username, claim.Email, claim.Apikey, errors.New("webtoken is expired")
-		}
-		return "", "", "", nil
-	}
-	return "", "", "", errors.New("claim error")
-}

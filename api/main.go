@@ -24,10 +24,12 @@ func main() {
 		website.GET("/register", views.RegisterView)
 		website.POST("/register", controllers.RegisterHandler)
 		website.GET("/logout", controllers.LogoutHandler)
-		website.GET("/getapi", controllers.GetApiHandler)
+		website.GET("/getapi", views.GetApiView)
+		website.POST("/getapi", controllers.GetApiHandler)
 	}
 	api := router.Group("/api")
 	{
+		api.POST("/", controllers.MainPage)
 		api.POST("/login", controllers.LogInToApi)
 
 	}

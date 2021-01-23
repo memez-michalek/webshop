@@ -59,11 +59,12 @@ func LogoutHandler(c *gin.Context) {
 }
 func GetApiHandler(c *gin.Context) {
 	if helpers.IsAuthenticated(c) {
+		shopname := c.PostFormArray("name")[0]
 		email, err := c.Cookie("email")
 		helpers.ErrorChecker(err)
 		username, err := c.Cookie("username")
 		helpers.ErrorChecker(err)
-		added := database.AddApi(email, username)
+		added := database.AddApi(email, username, shopname)
 		if added {
 			log.Print("api created")
 			c.Redirect(302, "/")
