@@ -32,7 +32,7 @@ func CreateToken(username string, email string, apikey string) (string, error) {
 		log.Print(err)
 	}
 
-	return token
+	return token, nil
 
 }
 func GetValidTokenValue(token string) (string, string, string, error) {

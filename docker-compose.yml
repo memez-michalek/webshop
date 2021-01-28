@@ -12,6 +12,7 @@ services:
       - database
   database:
     image: "mongo"
+    
     environment: 
       - MONGO_INTDB_DATABASE="database"
       - MONGO_INTDB_ROOT_USERNAME="admin"

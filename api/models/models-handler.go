@@ -2,7 +2,7 @@ package models
 
 import "github.com/dgrijalva/jwt-go"
 
-var SHOPLIST = make([]Shop, 0)
+var SHOPLIST = []QUERYShop{}
 
 type User struct {
 	Id       string
@@ -23,18 +23,22 @@ type APILOGIN struct {
 	Email    string `json:"email"`
 	Key      string `json:"key"`
 }
+
 type Product struct {
-	ID           string
-	Name         string
-	Price        float64
-	Description  string
-	Brand        string
-	Freeshipping bool
+	Category string `json:"category"`
+	Name     string `json:"name"`
 }
-type Shop struct {
-	Name   string
-	ApiKey string
+type QUERYShop struct {
+	Name string
+	ID   string
 }
+
+type SHOP struct {
+	ID    string    `json:"shop_id"`
+	Name  string    `json:"name"`
+	ITEMS []Product `json:"ITEMS"`
+}
+
 type APIUSER struct {
-	Token string
+	Token string `json:"key"`
 }

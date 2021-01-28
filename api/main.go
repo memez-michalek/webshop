@@ -31,9 +31,9 @@ func main() {
 	{
 		api.POST("/", controllers.MainPage)
 		api.POST("/login", controllers.LogInToApi)
-
+		api.POST("/main", controllers.MainPage)
+		api.POST("/logout", controllers.LogOutFromAPI)
 	}
 
 	router.Run(":8000")
-
 }

@@ -14,7 +14,7 @@ import (
 func LogInToApi(c *gin.Context) {
 	var (
 		apiuser = new(models.APILOGIN)
-		shop    = new(models.Shop)
+		shop    = new(models.QUERYShop)
 	)
 	err := c.ShouldBindJSON(&apiuser)
 	log.Print(err)
@@ -23,7 +23,7 @@ func LogInToApi(c *gin.Context) {
 
 	} else {
 
-		err := database.ApiLogin(apiuser.Email, apiuser.Username, apiuser.Key)
+		shopname, err := database.ApiLogin(apiuser.Email, apiuser.Username, apiuser.Key)
 		if err != nil {
 			c.JSON(400, "wrong credentials: "+err.Error())
 		} else {
@@ -31,11 +31,12 @@ func LogInToApi(c *gin.Context) {
 			if err != nil {
 				c.JSON(400, errors.New(errorCodes.TOKENERROR).Error())
 			}
-			queriedShop, err := database.QueryShopByApiKey(models.SHOPLIST, apiuser.Key)
+			_, err = database.QueryShopByApiKey(models.SHOPLIST, apiuser.Key)
 			if err != nil {
-				shop.ApiKey = apiuser.Key
-				shop.Name = queriedShop.Name
+				shop.ID = apiuser.Key
+				shop.Name = shopname
 				models.SHOPLIST = append(models.SHOPLIST, *shop)
+				log.Print("shoplist", models.SHOPLIST)
 				c.JSON(200, token)
 			} else {
 				log.Print(err)
@@ -46,15 +47,29 @@ func LogInToApi(c *gin.Context) {
 	}
 }
 func MainPage(c *gin.Context) {
-	apiUSER := new(models.APIUSER)
+	var (
+		apiUSER = new(models.APIUSER)
+	)
 	err := c.ShouldBind(&apiUSER)
 	if err != nil {
 		c.JSON(400, errorCodes.COULDNOTBIND)
 	} else {
-		username, email, apikey, err := webtoken.GetValidTokenValue(apiUSER.Token)
+		_, _, apikey, err := webtoken.GetValidTokenValue(apiUSER.Token)
 		switch {
 		case err == nil:
 
+			log.Print(models.SHOPLIST)
+			shop, err := database.QueryShopByApiKey(models.SHOPLIST, apikey)
+			if err != nil {
+				c.JSON(400, errorCodes.SHOPDOESNOTEXIST)
+			}
+			products, err := database.GetMainSiteProducts(shop)
+			if err != nil {
+				log.Print(err)
+				c.JSON(400, errorCodes.SHOPDOESNOTEXIST)
+			} else {
+				c.JSON(200, products)
+			}
 		case err.Error() == errorCodes.TOKENERROR:
 			_, _, apikey := webtoken.GetInvalidTokenValue(apiUSER.Token)
 			if apikey == "" {
@@ -96,4 +111,27 @@ func RenewApiKey(c *gin.Context) {
 		}
 
 	}
+}
+func LogOutFromAPI(c *gin.Context) {
+	var (
+		apiWebtoken = new(models.APIUSER)
+	)
+	err := c.ShouldBind(&apiWebtoken)
+	if err != nil {
+		log.Print(errorCodes.COULDNOTBIND)
+		c.JSON(400, err)
+	} else {
+		_, _, apikey, err := webtoken.GetValidTokenValue(apiWebtoken.Token)
+		if err != nil {
+			log.Print(errorCodes.TOKENEXPIRED)
+			c.JSON(400, err)
+		} else {
+			removed := database.RemoveShop(apikey)
+			if !removed {
+				log.Print(errorCodes.SHOPDOESNOTEXIST)
+				c.JSON(400, errorCodes.SHOPDOESNOTEXIST)
+			}
+		}
+	}
+
 }

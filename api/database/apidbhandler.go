@@ -10,17 +10,17 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func QueryShopByApiKey(shops []models.Shop, apiKey string) (models.Shop, error) {
+func QueryShopByApiKey(shops []models.QUERYShop, apiKey string) (models.QUERYShop, error) {
 	for _, v := range shops {
 		log.Print(v)
-		if v.ApiKey == apiKey {
+		if v.ID == apiKey {
 			return v, nil
 		}
 	}
-	return models.Shop{}, errors.New(errorCodes.SHOPDOESNOTEXIST)
+	return models.QUERYShop{}, errors.New(errorCodes.SHOPDOESNOTEXIST)
 
 }
-func ApiLogin(email string, username string, key string) error {
+func ApiLogin(email string, username string, key string) (string, error) {
 	var (
 		collection = initDB("user", "credentials")
 		user       = new(models.User)
@@ -29,30 +29,53 @@ func ApiLogin(email string, username string, key string) error {
 	err := collection.FindOne(context.TODO(), filter).Decode(&user)
 	if err != nil {
 		log.Print(errorCodes.USERDOESNOTEXIST)
-		return errors.New(errorCodes.USERDOESNOTEXIST)
+		return "", errors.New(errorCodes.USERDOESNOTEXIST)
 
 	} else {
-		for i := range user.ApiKeys {
+		for i, v := range user.ApiKeys {
 			if i == key {
-				return nil
+				return v, nil
 			}
 		}
-		return errors.New(errorCodes.COULDNOTFINDAPIKEY)
+		return "", errors.New(errorCodes.COULDNOTFINDAPIKEY)
 	}
 }
 func RemoveShop(apiKey string) bool {
 	for i, v := range models.SHOPLIST {
-		if v.ApiKey == apiKey {
+		if v.ID == apiKey {
 			models.SHOPLIST = append(models.SHOPLIST[:i], models.SHOPLIST[i+1:]...)
-
+			return true
 		}
 	}
-
+	return false
 }
 
-/*
-NOTE OUTPUT TYPE MIGHT / WILL CHANGE
-func (shop models.Shop) GetMainSiteProducts() (query []string, err error) {
+//NOTE OUTPUT TYPE MIGHT / WILL CHANGE
+func GetMainSiteProducts(queryShop models.QUERYShop) ([]models.Product, error) {
+	var (
+		collection = initDB("DATABASE", "SHOPS")
+		filter     = bson.M{"shop_id": queryShop.ID, "name": queryShop.Name}
+		shop       = new(models.SHOP)
+		product    = new(models.Product)
+	)
+
+	shop.ITEMS = append(shop.ITEMS, *product)
+	log.Print(shop)
+	err := collection.FindOne(context.TODO(), filter).Decode(&shop)
+
+	if err != nil {
+		log.Print(err)
+		log.Print(errorCodes.COULDNOTBIND)
+		return shop.ITEMS, errors.New(errorCodes.COULDNOTBIND)
+	} else {
+		return shop.ITEMS, nil
+	}
+}
+
+func InsertMainSiteProducts(queryShop models.QUERYShop) {
+	var (
+	//collection = initDB("DATABASE", "SHOPS")
+	//filter     = bson.M{"shop_id": queryShop.ID, "name": queryShop.Name}
+	)
 
 }
-*/
