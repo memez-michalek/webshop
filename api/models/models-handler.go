@@ -34,11 +34,15 @@ type QUERYShop struct {
 }
 
 type SHOP struct {
-	ID    string    `json:"shop_id"`
-	Name  string    `json:"name"`
-	ITEMS []Product `json:"ITEMS"`
+	SHOP_ID string    `json:"shop_id"`
+	Name    string    `json:"name"`
+	ITEMS   []Product `json:"ITEMS"`
 }
 
 type APIUSER struct {
 	Token string `json:"key"`
+}
+type APIUSERADDPRODUCTS struct {
+	Token string    `json:"key"`
+	ITEMS []Product `json:"ITEMS"`
 }

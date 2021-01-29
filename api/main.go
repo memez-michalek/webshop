@@ -33,6 +33,8 @@ func main() {
 		api.POST("/login", controllers.LogInToApi)
 		api.POST("/main", controllers.MainPage)
 		api.POST("/logout", controllers.LogOutFromAPI)
+		api.POST("/createshop", controllers.CreateShopController)
+		api.POST("/additems", controllers.InsertProductsIntoShopController)
 	}
 
 	router.Run(":8000")
