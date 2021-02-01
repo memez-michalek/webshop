@@ -25,8 +25,11 @@ type APILOGIN struct {
 }
 
 type Product struct {
-	Category string `json:"category"`
-	Name     string `json:"name"`
+	ID          string `json:"id"`
+	Category    string `json:"category"`
+	Name        string `json:"name"`
+	Price       string `json:"price"`
+	Description string `json:"description"`
 }
 type QUERYShop struct {
 	Name string

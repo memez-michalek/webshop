@@ -1,6 +1,6 @@
 package errorCodes
 
-var (
+const (
 	USERDOESNOTEXIST     = "User does not exist"
 	COULDNOTFINDAPIKEY   = "Could not find api key"
 	SHOPDOESNOTEXIST     = "Shop does not exist"

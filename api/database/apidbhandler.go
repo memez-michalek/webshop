@@ -73,20 +73,28 @@ func InsertSiteProducts(queryShop models.QUERYShop, products []models.Product) e
 	var (
 		collection = initDB("DATABASE", "SHOPS")
 		shop       = new(models.SHOP)
-		filter     = bson.M{"shop_id": queryShop.ID, "name": queryShop.Name}
+		filter     = bson.M{"name": queryShop.Name, "shop_id": queryShop.ID}
 	)
 	err := collection.FindOne(context.TODO(), filter).Decode(&shop)
 	if err != nil {
+		log.Print(products)
+		log.Print(shop)
 		log.Print(err)
+		log.Print(filter)
 		return errors.New(errorCodes.SHOPDOESNOTEXIST)
 	} else {
 		shop.ITEMS = append(shop.ITEMS, products...)
+
 		update := bson.M{"$set": bson.M{"ITEMS": shop.ITEMS}}
-		err := collection.FindOneAndReplace(context.TODO(), filter, update)
+		log.Print(shop.ITEMS)
+		log.Print(update)
+		log.Print(queryShop.ID, queryShop.Name)
+		err := collection.FindOneAndUpdate(context.TODO(), filter, update).Err()
 		if err != nil {
 			log.Print(err)
 			return errors.New(errorCodes.COULDNOTINSERTINTODB)
 		}
+
 		return nil
 	}
 }
@@ -94,14 +102,13 @@ func CreateNewShop(QueryShop models.QUERYShop) error {
 	var (
 		collection = initDB("DATABASE", "SHOPS")
 		shop       = new(models.SHOP)
-		items      = make([]models.Product, 0)
-		filter     = bson.M{"shop_id": QueryShop.ID, "name": QueryShop.Name}
+		//items      = make([]models.Product, 0)
+		filter = bson.M{"shop_id": QueryShop.ID, "name": QueryShop.Name}
 	)
 	err := collection.FindOne(context.TODO(), filter).Decode(&shop)
 	if err != nil {
 		shop.SHOP_ID = QueryShop.ID
 		shop.Name = QueryShop.Name
-		shop.ITEMS = items
 		_, err := collection.InsertOne(context.TODO(), shop)
 		if err != nil {
 			log.Print(err)

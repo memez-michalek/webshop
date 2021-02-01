@@ -157,7 +157,6 @@ func CreateShopController(c *gin.Context) {
 		}
 		err = database.CreateNewShop(shop)
 		if err != nil {
-			log.Print("sentino")
 			log.Print(err)
 			c.JSON(400, err)
 		} else {
@@ -172,6 +171,7 @@ func InsertProductsIntoShopController(c *gin.Context) {
 	)
 	err := c.ShouldBind(&user)
 	if err != nil {
+		log.Print("sentino")
 		log.Print(errorCodes.COULDNOTBIND)
 		c.JSON(400, err)
 	} else {
@@ -182,7 +182,6 @@ func InsertProductsIntoShopController(c *gin.Context) {
 		}
 		shop, err := database.QueryShopByApiKey(models.SHOPLIST, apikey)
 		if err != nil {
-			log.Print(err)
 			c.JSON(400, err)
 		}
 		err = database.InsertSiteProducts(shop, user.ITEMS)
