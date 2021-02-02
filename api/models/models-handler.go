@@ -53,3 +53,9 @@ type QueryProduct struct {
 	Token     string `json:"key"`
 	ProductId string `json:"product_id"`
 }
+
+type Order struct {
+	Id         string   `json:"ID"`
+	ProductIds []string `json:"products"`
+	Value      string   `json:"value"`
+}
