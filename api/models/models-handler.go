@@ -49,3 +49,7 @@ type APIUSERADDPRODUCTS struct {
 	Token string    `json:"key"`
 	ITEMS []Product `json:"ITEMS"`
 }
+type QueryProduct struct {
+	Token     string `json:"key"`
+	ProductId string `json:"product_id"`
+}

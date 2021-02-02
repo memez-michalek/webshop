@@ -18,8 +18,16 @@ func QueryShopByApiKey(shops []models.QUERYShop, apiKey string) (models.QUERYSho
 		}
 	}
 	return models.QUERYShop{}, errors.New(errorCodes.SHOPDOESNOTEXIST)
-
 }
+func QueryProductByProductId(products []models.Product, ID string) (models.Product, error) {
+	for _, v := range products {
+		if v.ID == ID {
+			return v, nil
+		}
+	}
+	return models.Product{}, errors.New(errorCodes.PRODUCTDOESNOTEXIST)
+}
+
 func ApiLogin(email string, username string, key string) (string, error) {
 	var (
 		collection = initDB("user", "credentials")
@@ -77,18 +85,13 @@ func InsertSiteProducts(queryShop models.QUERYShop, products []models.Product) e
 	)
 	err := collection.FindOne(context.TODO(), filter).Decode(&shop)
 	if err != nil {
-		log.Print(products)
-		log.Print(shop)
-		log.Print(err)
-		log.Print(filter)
+
 		return errors.New(errorCodes.SHOPDOESNOTEXIST)
 	} else {
 		shop.ITEMS = append(shop.ITEMS, products...)
 
 		update := bson.M{"$set": bson.M{"ITEMS": shop.ITEMS}}
-		log.Print(shop.ITEMS)
-		log.Print(update)
-		log.Print(queryShop.ID, queryShop.Name)
+
 		err := collection.FindOneAndUpdate(context.TODO(), filter, update).Err()
 		if err != nil {
 			log.Print(err)
@@ -117,4 +120,26 @@ func CreateNewShop(QueryShop models.QUERYShop) error {
 		return nil
 	}
 	return errors.New(errorCodes.SHOPALREADYEXISTS)
+}
+func GetItemDetails(QueryShop models.QUERYShop, productId string) (models.Product, error) {
+	var (
+		collection = initDB("DATABASE", "SHOPS")
+		filter     = bson.M{"shop_id": QueryShop.ID, "name": QueryShop.Name}
+		shop       = new(models.SHOP)
+		product    = new(models.Product)
+	)
+	err := collection.FindOne(context.TODO(), filter).Decode(&shop)
+	if err != nil {
+		log.Print(errorCodes.COULDNOTBIND)
+		log.Print(err)
+		return *product, err
+	} else {
+		foundproduct, err := QueryProductByProductId(shop.ITEMS, productId)
+		if err != nil {
+			log.Print(err)
+			return *product, err
+		}
+		return foundproduct, nil
+
+	}
 }

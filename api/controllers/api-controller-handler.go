@@ -171,7 +171,6 @@ func InsertProductsIntoShopController(c *gin.Context) {
 	)
 	err := c.ShouldBind(&user)
 	if err != nil {
-		log.Print("sentino")
 		log.Print(errorCodes.COULDNOTBIND)
 		c.JSON(400, err)
 	} else {
@@ -192,4 +191,34 @@ func InsertProductsIntoShopController(c *gin.Context) {
 			c.JSON(200, "inserted")
 		}
 	}
+}
+func GetItemDetails(c *gin.Context) {
+	var (
+		product = new(models.QueryProduct)
+	)
+	err := c.ShouldBind(&product)
+	if err != nil {
+		log.Print(errorCodes.COULDNOTBIND)
+		c.JSON(400, errorCodes.COULDNOTBIND)
+	} else {
+
+		_, _, apiKey, err := webtoken.GetValidTokenValue(product.Token)
+		if err != nil {
+			log.Print(err)
+			c.JSON(400, err)
+		}
+		shop, err := database.QueryShopByApiKey(models.SHOPLIST, apiKey)
+		if err != nil {
+			log.Print(err)
+			c.JSON(400, err)
+		}
+		productDetails, err := database.GetItemDetails(shop, product.ProductId)
+		if err != nil {
+			log.Print(err)
+			c.JSON(400, err)
+		} else {
+			c.JSON(200, productDetails)
+		}
+	}
+
 }

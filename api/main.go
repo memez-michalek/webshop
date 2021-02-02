@@ -35,6 +35,7 @@ func main() {
 		api.POST("/logout", controllers.LogOutFromAPI)
 		api.POST("/createshop", controllers.CreateShopController)
 		api.POST("/additems", controllers.InsertProductsIntoShopController)
+		api.POST("/getproduct", controllers.GetItemDetails)
 	}
 
 	router.Run(":8000")

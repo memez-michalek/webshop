@@ -12,4 +12,5 @@ const (
 	COULDNOTINSERTINTODB = "Could not insert product/ shop into DATABASE"
 	SHOPALREADYEXISTS    = "This particular id or name is used in different shop"
 	SHOPWASTNINSERTED    = "Shop wasnt added to the database"
+	PRODUCTDOESNOTEXIST  = "product was not find in database"
 )
