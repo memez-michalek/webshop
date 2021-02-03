@@ -19,13 +19,21 @@ func QueryShopByApiKey(shops []models.QUERYShop, apiKey string) (models.QUERYSho
 	}
 	return models.QUERYShop{}, errors.New(errorCodes.SHOPDOESNOTEXIST)
 }
-func QueryProductByProductId(products []models.Product, ID string) (models.Product, error) {
-	for _, v := range products {
-		if v.ID == ID {
-			return v, nil
+func QueryProductsByProductIds(products []models.Product, ID []string) ([]models.Product, error) {
+	var (
+		queriedproducts = make([]models.Product, 0)
+	)
+	for _, id := range ID {
+		for _, v := range products {
+			if v.ID == id {
+				queriedproducts = append(queriedproducts, v)
+			}
 		}
 	}
-	return models.Product{}, errors.New(errorCodes.PRODUCTDOESNOTEXIST)
+	if len(queriedproducts) > 0 {
+		return queriedproducts, nil
+	}
+	return queriedproducts, errors.New(errorCodes.COULDNOTFINDPRODUCTS)
 }
 
 func ApiLogin(email string, username string, key string) (string, error) {
@@ -134,12 +142,12 @@ func GetItemDetails(QueryShop models.QUERYShop, productId string) (models.Produc
 		log.Print(err)
 		return *product, err
 	} else {
-		foundproduct, err := QueryProductByProductId(shop.ITEMS, productId)
+		foundproduct, err := QueryProductsByProductIds(shop.ITEMS, []string{productId})
 		if err != nil {
 			log.Print(err)
 			return *product, err
 		}
-		return foundproduct, nil
+		return foundproduct[0], nil
 
 	}
 }

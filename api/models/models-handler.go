@@ -40,6 +40,7 @@ type SHOP struct {
 	SHOP_ID string    `json:"shop_id"`
 	Name    string    `json:"name"`
 	ITEMS   []Product `json:"ITEMS"`
+	Orders  []Order   `json:"ORDERS"`
 }
 
 type APIUSER struct {
@@ -54,8 +55,24 @@ type QueryProduct struct {
 	ProductId string `json:"product_id"`
 }
 
+type QueryOrder struct {
+	Webtoken    string      `json:"webtoken"`
+	ProductIds  []string    `json:"productids"`
+	Credentials Credentials `json:"credentials"`
+}
+type Credentials struct {
+	Name        string `json:"name"`
+	Surname     string `json:"surname"`
+	Street      string `json:"street"`
+	HouseNumber string `json:"housenumber"`
+	FlatNumber  string `json:"flatnumber"`
+	Postcode    string `json:"postcode"`
+	Phone       string `json:"phone"`
+	Email       string `json:"email"`
+}
+
 type Order struct {
-	Id         string   `json:"ID"`
-	ProductIds []string `json:"products"`
-	Value      string   `json:"value"`
+	Id          string      `json:"ID"`
+	Products    []Product   `json:"products"`
+	Credentials Credentials `json:"credentials"`
 }

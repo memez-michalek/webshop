@@ -13,4 +13,6 @@ const (
 	SHOPALREADYEXISTS    = "This particular id or name is used in different shop"
 	SHOPWASTNINSERTED    = "Shop wasnt added to the database"
 	PRODUCTDOESNOTEXIST  = "product was not find in database"
+	COULDNOTFINDPRODUCTS = "COULD NOT FIND PRODUCTS BY ID"
+	COULDNOTFINDSHOP     = "COULD NOT FIND PARTICULAR SHOP"
 )
