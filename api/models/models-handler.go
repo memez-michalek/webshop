@@ -76,3 +76,8 @@ type Order struct {
 	Products    []Product   `json:"products"`
 	Credentials Credentials `json:"credentials"`
 }
+
+type OrderFilter struct {
+	Webtoken string `json:"webtoken"`
+	OrderId  string `json:"orderid"`
+}

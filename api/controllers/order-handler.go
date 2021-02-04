@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"api/database"
+	"api/errorCodes"
 	"api/models"
 	"log"
 
@@ -34,8 +35,46 @@ func MakeOrder(c *gin.Context) {
 				log.Print(err)
 				c.JSON(400, err)
 			} else {
-				c.JSON(200, "inserted")
+				c.JSON(200, "inserted"+order.Id)
 			}
 		}
 	}
+}
+func QueryOrder(c *gin.Context) {
+	var (
+		orderfilter = new(models.OrderFilter)
+	)
+	err := c.ShouldBind(&orderfilter)
+	if err != nil {
+		log.Print(err)
+		c.JSON(400, err)
+	} else {
+		order, err := database.QueryOrder(*orderfilter)
+		if err != nil {
+			log.Print(err)
+			c.JSON(400, err)
+		} else {
+			c.JSON(200, order)
+		}
+	}
+}
+func DeleteOrder(c *gin.Context) {
+	var (
+		orderfilter = new(models.OrderFilter)
+	)
+	err := c.ShouldBind(&orderfilter)
+	if err != nil {
+		log.Print(err)
+		c.JSON(400, err)
+	} else {
+		order, err := database.QueryOrder(*orderfilter)
+		if err != nil {
+			log.Print(err)
+			c.JSON(400, errorCodes.ORDERDOESNOTEXIST)
+		} else {
+
+		}
+
+	}
+
 }

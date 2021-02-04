@@ -25,14 +25,43 @@ func QueryShop(queryshop models.QUERYShop) (models.SHOP, error) {
 	}
 	return *shop, nil
 }
+func GetOrder(shop models.SHOP, orderid string) (models.Order, error) {
+	for _, v := range shop.Orders {
+		if v.Id == orderid {
+			return v, nil
+		}
+	}
+	return models.Order{}, errors.New(errorCodes.ORDERDOESNOTEXIST)
+}
 
-func QueryOrder() {
+func QueryOrder(orderfilter models.OrderFilter) (models.Order, error) {
 
+	_, _, apikey, err := webtoken.GetValidTokenValue(orderfilter.Webtoken)
+	if err != nil {
+		log.Print(err)
+		return models.Order{}, err
+	}
+	queryshop, err := QueryShopByApiKey(models.SHOPLIST, apikey)
+	if err != nil {
+		log.Print(err)
+		return models.Order{}, err
+	}
+	shop, err := QueryShop(queryshop)
+	if err != nil {
+		log.Print(err)
+		return models.Order{}, err
+	}
+	order, err := GetOrder(shop, orderfilter.OrderId)
+	if err != nil {
+		log.Print(err)
+		return models.Order{}, err
+	}
+	return order, nil
 }
 func AddOrder(shopId string, order models.Order) error {
 	var (
 		filter     = bson.M{"shop_id": shopId}
-		collection = initDB("DATABASE", "ORDERS")
+		collection = initDB("DATABASE", "SHOPS")
 		shop       = new(models.SHOP)
 	)
 	err := collection.FindOne(context.TODO(), filter).Decode(&shop)
