@@ -73,6 +73,13 @@ func DeleteOrder(c *gin.Context) {
 			c.JSON(400, errorCodes.ORDERDOESNOTEXIST)
 		} else {
 
+			err := database.DeleteOrder(order, orderfilter.Webtoken)
+			if err != nil {
+				log.Print(err)
+				c.JSON(400, err)
+			} else {
+				c.JSON(200, "OBJECT HAS BEEN DELETED")
+			}
 		}
 
 	}

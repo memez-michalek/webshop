@@ -33,6 +33,15 @@ func GetOrder(shop models.SHOP, orderid string) (models.Order, error) {
 	}
 	return models.Order{}, errors.New(errorCodes.ORDERDOESNOTEXIST)
 }
+func RemoveOrder(order models.Order, shop models.SHOP) ([]models.Order, error) {
+	for i, v := range shop.Orders {
+		if v.Id == order.Id {
+			shop.Orders = append(shop.Orders[:i], shop.Orders[i+1:]...)
+			return shop.Orders, nil
+		}
+	}
+	return []models.Order{}, errors.New(errorCodes.ORDERDOESNOTEXIST)
+}
 
 func QueryOrder(orderfilter models.OrderFilter) (models.Order, error) {
 
@@ -114,4 +123,39 @@ func GetQueryShop(queryOrder models.QueryOrder) (models.QUERYShop, error) {
 		return models.QUERYShop{}, err
 	}
 	return queryshop, nil
+}
+func DeleteOrder(order models.Order, Webtoken string) error {
+	var (
+		collection = initDB("DATABASE", "SHOPS")
+		shop       = new(models.SHOP)
+	)
+	_, _, apikey, err := webtoken.GetValidTokenValue(Webtoken)
+	if err != nil {
+		log.Print(errorCodes.TOKENEXPIRED)
+		return err
+	}
+	queryShop, err := QueryShopByApiKey(models.SHOPLIST, apikey)
+	if err != nil {
+		log.Print(errorCodes.TOKENEXPIRED)
+		return err
+	}
+	err = collection.FindOne(context.TODO(), bson.M{"shop_id": queryShop.ID}).Decode(&shop)
+	if err != nil {
+		log.Print(err)
+		return err
+	} else {
+		updatedOrders, err := RemoveOrder(order, *shop)
+		if err != nil {
+			log.Print(err)
+			return err
+		}
+		shop.Orders = updatedOrders
+		err = collection.FindOneAndReplace(context.TODO(), bson.M{"shop_id": queryShop.ID}, bson.M{"$set": bson.M{"Orders": shop.Orders}}).Err()
+		if err != nil {
+			log.Print(err)
+			return err
+		}
+		return nil
+	}
+
 }
