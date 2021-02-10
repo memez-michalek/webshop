@@ -23,8 +23,10 @@ func QueryProductsByProductIds(products []models.Product, ID []string) ([]models
 	var (
 		queriedproducts = make([]models.Product, 0)
 	)
+	log.Print(products, ID)
 	for _, id := range ID {
 		for _, v := range products {
+			log.Print(id)
 			if v.ID == id {
 				queriedproducts = append(queriedproducts, v)
 			}

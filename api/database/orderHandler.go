@@ -100,6 +100,7 @@ func MakeOrder(queryOrder *models.QueryOrder) (models.Order, error) {
 		log.Print(err)
 		return *order, err
 	}
+	log.Print(queryOrder.ProductIds)
 	products, err := QueryProductsByProductIds(shop.ITEMS, queryOrder.ProductIds)
 	if err != nil {
 		log.Print(err)

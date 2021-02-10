@@ -23,6 +23,7 @@ func MakeOrder(c *gin.Context) {
 		order, err := database.MakeOrder(queryOrder)
 		if err != nil {
 			log.Print(err)
+			log.Print("sentino")
 			c.JSON(400, err)
 		} else {
 			queryshop, err := database.GetQueryShop(*queryOrder)
