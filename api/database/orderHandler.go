@@ -100,7 +100,7 @@ func MakeOrder(queryOrder *models.QueryOrder) (models.Order, error) {
 		log.Print(err)
 		return *order, err
 	}
-	log.Print(queryOrder.ProductIds)
+
 	products, err := QueryProductsByProductIds(shop.ITEMS, queryOrder.ProductIds)
 	if err != nil {
 		log.Print(err)
@@ -151,7 +151,7 @@ func DeleteOrder(order models.Order, Webtoken string) error {
 			return err
 		}
 		shop.Orders = updatedOrders
-		err = collection.FindOneAndReplace(context.TODO(), bson.M{"shop_id": queryShop.ID}, bson.M{"$set": bson.M{"Orders": shop.Orders}}).Err()
+		err = collection.FindOneAndUpdate(context.TODO(), bson.M{"shop_id": queryShop.ID}, bson.M{"$set": bson.M{"Orders": shop.Orders}}).Err()
 		if err != nil {
 			log.Print(err)
 			return err
