@@ -1,0 +1,9 @@
+FROM golang:1.12-alpine
+
+RUN set -ex; \
+    apk update; \
+    apk add --no-cache git
+
+WORKDIR /home/memez-michalek/Desktop/projects/webshop/
+
+CMD CGO_ENABLED=0 go test ./...

@@ -3,13 +3,8 @@ package main
 import (
 	"api/controllers"
 	"api/views"
-	"context"
 
 	"github.com/gin-gonic/gin"
-)
-
-var (
-	ctx = context.Background()
 )
 
 func main() {

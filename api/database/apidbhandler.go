@@ -45,6 +45,7 @@ func ApiLogin(email string, username string, key string) (string, error) {
 	)
 	err := collection.FindOne(context.TODO(), filter).Decode(&user)
 	if err != nil {
+
 		log.Print(errorCodes.USERDOESNOTEXIST)
 		return "", errors.New(errorCodes.USERDOESNOTEXIST)
 

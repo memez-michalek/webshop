@@ -18,11 +18,11 @@ func LogInToApi(c *gin.Context) {
 	)
 	err := c.ShouldBindJSON(&apiuser)
 	log.Print(err)
+
 	if err != nil {
 		c.JSON(400, errorCodes.COULDNOTBIND)
 
 	} else {
-
 		shopname, err := database.ApiLogin(apiuser.Email, apiuser.Username, apiuser.Key)
 		if err != nil {
 			c.JSON(400, "wrong credentials: "+err.Error())
@@ -73,7 +73,7 @@ func MainPage(c *gin.Context) {
 		case err.Error() == errorCodes.TOKENERROR:
 			_, _, apikey := webtoken.GetInvalidTokenValue(apiUSER.Token)
 			if apikey == "" {
-				log.Fatal(err)
+				c.JSON(404, "Fatal error ")
 			}
 			removed := database.RemoveShop(apikey)
 			if !removed {
@@ -84,7 +84,7 @@ func MainPage(c *gin.Context) {
 			log.Print(errorCodes.TOKENEXPIRED)
 			_, _, apikey := webtoken.GetInvalidTokenValue(apiUSER.Token)
 			if apikey == "" {
-				log.Fatal(err)
+				c.JSON(404, "Fatal error ")
 			}
 			removed := database.RemoveShop(apikey)
 			if !removed {

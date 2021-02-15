@@ -15,8 +15,8 @@ import (
 )
 
 func initDB(db string, collection string) *mongo.Collection {
-
-	options := options.Client().ApplyURI("mongodb://database:27017")
+	options := options.Client().ApplyURI("mongodb://localhost:27017")
+	//options := options.Client().ApplyURI("mongodb://database:27017")
 	client, err := mongo.Connect(context.TODO(), options)
 	helpers.ErrorChecker(err)
 
