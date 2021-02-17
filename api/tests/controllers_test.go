@@ -209,3 +209,57 @@ func TestRenewWebtoken(t *testing.T) {
 		t.Errorf("renew function returned wrong http status code")
 	}
 }
+
+func TestLogoutFromApiInvalidToken(t *testing.T) {
+	data := models.APIUSER{
+		Token: faker.JWT,
+	}
+	marshalled, err := json.Marshal(data)
+	if err != nil {
+		t.Errorf("internal marshall error")
+	}
+
+	gin.SetMode(gin.TestMode)
+	router := gin.Default()
+
+	router.POST("/api/logout", controllers.RenewApiKey)
+
+	rec := httptest.NewRecorder()
+	req, err := http.NewRequest(http.MethodPost, "/api/logout", bytes.NewReader(marshalled))
+	if err != nil {
+		t.Errorf("cannot create new request")
+	}
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != 400 {
+		t.Errorf("logout function returned wrong http status code")
+	}
+
+}
+
+func TestLogoutFromApiInvalidDataType(t *testing.T) {
+	data := models.APIUSER{
+		Token: faker.NAME,
+	}
+	marshalled, err := json.Marshal(data)
+	if err != nil {
+		t.Errorf("internal marshall error")
+	}
+
+	gin.SetMode(gin.TestMode)
+	router := gin.Default()
+
+	router.POST("/api/logout", controllers.RenewApiKey)
+
+	rec := httptest.NewRecorder()
+	req, err := http.NewRequest(http.MethodPost, "/api/logout", bytes.NewReader(marshalled))
+	if err != nil {
+		t.Errorf("cannot create new request")
+	}
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != 400 {
+		t.Errorf("logout function returned wrong http status code")
+	}
+
+}
