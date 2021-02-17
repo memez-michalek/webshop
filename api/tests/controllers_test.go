@@ -263,3 +263,100 @@ func TestLogoutFromApiInvalidDataType(t *testing.T) {
 	}
 
 }
+
+func TestCreateshopControllerBadCreds(t *testing.T) {
+	data := models.APIUSER{
+		Token: faker.JWT,
+	}
+	marshalled, err := json.Marshal(data)
+	if err != nil {
+		t.Errorf("internal marshall error")
+	}
+
+	gin.SetMode(gin.TestMode)
+	router := gin.Default()
+
+	router.POST("/api/createshop", controllers.CreateShopController)
+
+	rec := httptest.NewRecorder()
+	req, err := http.NewRequest(http.MethodPost, "/api/createshop", bytes.NewReader(marshalled))
+	if err != nil {
+		t.Errorf("cannot create new request")
+	}
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != 400 {
+		t.Errorf("logout function returned wrong http status code")
+	}
+
+}
+
+func TestCreateshopControllerInvalidDataType(t *testing.T) {
+	data := models.APIUSER{
+		Token: faker.NAME,
+	}
+	marshalled, err := json.Marshal(data)
+	if err != nil {
+		t.Errorf("internal marshall error")
+	}
+
+	gin.SetMode(gin.TestMode)
+	router := gin.Default()
+
+	router.POST("/api/createshop", controllers.CreateShopController)
+
+	rec := httptest.NewRecorder()
+	req, err := http.NewRequest(http.MethodPost, "/api/createshop", bytes.NewReader(marshalled))
+	if err != nil {
+		t.Errorf("cannot create new request")
+	}
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != 400 {
+		t.Errorf("create shop function returned wrong http status code")
+	}
+
+}
+func TestCreateShopValidData(t *testing.T) {
+	marshalled, err := json.Marshal(apikey)
+	if err != nil {
+		t.Errorf("internal marshall error")
+	}
+	gin.SetMode(gin.TestMode)
+	router := gin.Default()
+	router.POST("/api/login", controllers.LogInToApi)
+	rec := httptest.NewRecorder()
+	req, err := http.NewRequest(http.MethodPost, "/api/login", bytes.NewReader(marshalled))
+	if err != nil {
+		t.Errorf("request error")
+	}
+	log.Print(rec.Body.String())
+
+	if rec.Code != 200 {
+		t.Errorf("could not login to api in a first place")
+	}
+	data := models.APIUSER{
+		Token: rec.Body.String(),
+	}
+	marshalled, err = json.Marshal(data)
+	if err != nil {
+		t.Errorf("internal marshall error")
+	}
+
+	router.POST("/api/createshop", controllers.CreateShopController)
+
+	req, err = http.NewRequest(http.MethodPost, "/api/createshop", bytes.NewReader(marshalled))
+	if err != nil {
+		t.Errorf("cannot create new request")
+	}
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != 400 {
+		t.Errorf("create shop function returned wrong http status code")
+	}
+
+}
+
+func TestInsertProductsIntoShopController(t *testing.T) {
+	log.Print("jd")
+}
