@@ -92,6 +92,7 @@ func Test_LoginToApiAgain(t *testing.T) {
 	router.POST("/api/login", controllers.LogInToApi)
 
 	request, err := http.NewRequest(http.MethodPost, "/api/login", d)
+
 	if err != nil {
 		t.Fatalf("failed to send request")
 	}
@@ -327,6 +328,7 @@ func TestCreateShopValidData(t *testing.T) {
 	router.POST("/api/login", controllers.LogInToApi)
 	rec := httptest.NewRecorder()
 	req, err := http.NewRequest(http.MethodPost, "/api/login", bytes.NewReader(marshalled))
+	router.ServeHTTP(rec, req)
 	if err != nil {
 		t.Errorf("request error")
 	}
@@ -358,5 +360,47 @@ func TestCreateShopValidData(t *testing.T) {
 }
 
 func TestInsertProductsIntoShopController(t *testing.T) {
-	log.Print("jd")
+	marshalled, err := json.Marshal(apikey)
+	if err != nil {
+		t.Errorf("internal request marshall err ")
+	}
+	gin.SetMode(gin.TestMode)
+	router := gin.Default()
+	router.POST("/api/login", controllers.LogInToApi)
+	router.POST("/api/additems", controllers.InsertProductsIntoShopController)
+	rec := httptest.NewRecorder()
+	req, err := http.NewRequest(http.MethodPost, "/api/login", bytes.NewReader(marshalled))
+	router.ServeHTTP(rec, req)
+
+	ps := models.APIUSERADDPRODUCTS{
+		Token: rec.Body.String(),
+		ITEMS: []models.Product{models.Product{
+			ID:          "1",
+			Category:    "jebanie",
+			Name:        "mlody white sex tape",
+			Price:       "399",
+			Description: "zobacz jak white2115 jest pierdolony przez zycie",
+		},
+			models.Product{
+				ID:          "2",
+				Category:    "auto",
+				Name:        "mercedes benz e63 amg ",
+				Price:       "500000",
+				Description: "w chuj szybkie autko wariaciku",
+			},
+		},
+	}
+
+	marshalled, err = json.Marshal(&ps)
+	if err != nil {
+		t.Errorf("error occured when marshalling" + err.Error())
+	}
+	req, err = http.NewRequest(http.MethodPost, "/api/additems", bytes.NewReader(marshalled))
+	if err != nil {
+		t.Errorf("error occurred when sending request")
+	}
+	router.ServeHTTP(rec, req)
+	if rec.Code != 200 {
+		t.Errorf("error occured when adding products")
+	}
 }
