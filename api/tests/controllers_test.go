@@ -21,6 +21,7 @@ var apikey = models.APILOGIN{
 	Email:    "cypis@cypis.com",
 	Key:      "1ntoZdCfBUb6u1RTUfkXKioqvxc",
 }
+var TOKEN = ""
 
 func TestApiMainPageBadCreds(t *testing.T) {
 	data := models.APIUSER{
@@ -59,7 +60,7 @@ func TestAPIManipage(t *testing.T) {
 	w := httptest.NewRecorder()
 	router.ServeHTTP(w, req)
 
-	log.Println(w.Body.String())
+	TOKEN = w.Body.String()
 	data := models.APIUSER{
 		Token: w.Body.String(),
 	}
@@ -326,8 +327,16 @@ func TestCreateShopValidData(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	router := gin.Default()
 	router.POST("/api/login", controllers.LogInToApi)
+	router.POST("/api/logout")
 	rec := httptest.NewRecorder()
-	req, err := http.NewRequest(http.MethodPost, "/api/login", bytes.NewReader(marshalled))
+	req, err := http.NewRequest(http.MethodPost, "/api/logout", bytes.NewReader(marshalled))
+
+	router.ServeHTTP(rec, req)
+	if rec.Code != 200 {
+		t.Errorf("did not log out")
+	}
+
+	req, err = http.NewRequest(http.MethodPost, "/api/login", bytes.NewReader(marshalled))
 	router.ServeHTTP(rec, req)
 	if err != nil {
 		t.Errorf("request error")
@@ -335,8 +344,9 @@ func TestCreateShopValidData(t *testing.T) {
 	log.Print(rec.Body.String())
 
 	if rec.Code != 200 {
-		t.Errorf("could not login to api in a first place")
+		t.Errorf("could not login to api ")
 	}
+
 	data := models.APIUSER{
 		Token: rec.Body.String(),
 	}
@@ -346,7 +356,7 @@ func TestCreateShopValidData(t *testing.T) {
 	}
 
 	router.POST("/api/createshop", controllers.CreateShopController)
-
+	rec = httptest.NewRecorder()
 	req, err = http.NewRequest(http.MethodPost, "/api/createshop", bytes.NewReader(marshalled))
 	if err != nil {
 		t.Errorf("cannot create new request")
@@ -360,28 +370,27 @@ func TestCreateShopValidData(t *testing.T) {
 }
 
 func TestInsertProductsIntoShopController(t *testing.T) {
-	marshalled, err := json.Marshal(apikey)
-	if err != nil {
-		t.Errorf("internal request marshall err ")
-	}
+	//marshalled, err := json.Marshal(apikey)
+	//if err != nil {
+	//	t.Errorf("internal request marshall err ")
+	//}
+
 	gin.SetMode(gin.TestMode)
 	router := gin.Default()
-	router.POST("/api/login", controllers.LogInToApi)
-	router.POST("/api/additems", controllers.InsertProductsIntoShopController)
-	rec := httptest.NewRecorder()
-	req, err := http.NewRequest(http.MethodPost, "/api/login", bytes.NewReader(marshalled))
-	router.ServeHTTP(rec, req)
 
+	router.POST("/api/additems", controllers.InsertProductsIntoShopController)
+
+	log.Print("TOKEN", TOKEN)
 	ps := models.APIUSERADDPRODUCTS{
-		Token: rec.Body.String(),
-		ITEMS: []models.Product{models.Product{
+		Token: TOKEN,
+		ITEMS: []models.Product{{
 			ID:          "1",
 			Category:    "jebanie",
 			Name:        "mlody white sex tape",
 			Price:       "399",
 			Description: "zobacz jak white2115 jest pierdolony przez zycie",
 		},
-			models.Product{
+			{
 				ID:          "2",
 				Category:    "auto",
 				Name:        "mercedes benz e63 amg ",
@@ -391,16 +400,79 @@ func TestInsertProductsIntoShopController(t *testing.T) {
 		},
 	}
 
-	marshalled, err = json.Marshal(&ps)
+	marshal, err := json.Marshal(ps)
+
 	if err != nil {
 		t.Errorf("error occured when marshalling" + err.Error())
 	}
-	req, err = http.NewRequest(http.MethodPost, "/api/additems", bytes.NewReader(marshalled))
+
+	r := httptest.NewRecorder()
+	//reader := bytes.NewReader(marshalled)
+	//file, _ := ioutil.ReadFile("insertbody.json")
+
+	req, err := http.NewRequest(http.MethodPost, "/api/additems", bytes.NewBuffer(marshal))
+	log.Print(req)
 	if err != nil {
-		t.Errorf("error occurred when sending request")
+		t.Errorf("error occurred when sending request" + err.Error())
 	}
-	router.ServeHTTP(rec, req)
-	if rec.Code != 200 {
+	router.ServeHTTP(r, req)
+	log.Print(r.Body.String())
+	log.Print(r.Code)
+	if r.Code != 200 {
 		t.Errorf("error occured when adding products")
 	}
+}
+
+func TestGetItemDetails(t *testing.T) {
+	data := models.APIUSER{
+		Token: faker.JWT,
+	}
+	marshalled, err := json.Marshal(data)
+	if err != nil {
+		t.Errorf("internal marshall error")
+	}
+
+	gin.SetMode(gin.TestMode)
+	router := gin.Default()
+
+	router.POST("/api/datails", controllers.GetItemDetails)
+
+	rec := httptest.NewRecorder()
+	req, err := http.NewRequest(http.MethodPost, "/api/details", bytes.NewReader(marshalled))
+	if err != nil {
+		t.Errorf("cannot create new request")
+	}
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != 400 {
+		t.Errorf("logout function returned wrong http status code")
+	}
+
+}
+
+func TestGetItemDetailInvalidDataType(t *testing.T) {
+	data := models.APIUSER{
+		Token: faker.NAME,
+	}
+	marshalled, err := json.Marshal(data)
+	if err != nil {
+		t.Errorf("internal marshall error")
+	}
+
+	gin.SetMode(gin.TestMode)
+	router := gin.Default()
+
+	router.POST("/api/details", controllers.GetItemDetails)
+
+	rec := httptest.NewRecorder()
+	req, err := http.NewRequest(http.MethodPost, "/api/details", bytes.NewReader(marshalled))
+	if err != nil {
+		t.Errorf("cannot create new request")
+	}
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != 400 {
+		t.Errorf("create shop function returned wrong http status code")
+	}
+
 }

@@ -1,5 +1,5 @@
-version: '3'
 
+version: '3'
 services:
   
   #web:
@@ -11,9 +11,6 @@ services:
   #    - "./api:/app"
   #  depends_on: 
   #    - database
-  
-
-
   database:
     image: "mongo"
     
@@ -25,19 +22,4 @@ services:
       - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
       - ./mongo-volume:/data/db
     ports: 
-      - '27017:27017' 
-    
-      
-  #test:
-  #  build:
-  #    context: api
-  #    dockerfile: ./api/Dockerfile.test
-  #  ports:
-  #    - "8001:8001"
-  #  volumes:
-  #    - $PWD:/home/memez-michalek/Desktop/projects/webshop/
-  #  depends_on: 
-  #    - database
-  #  networks:
-  #    - integration-test
-  
+      - '27017:27017'

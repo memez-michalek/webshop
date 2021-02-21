@@ -170,10 +170,12 @@ func InsertProductsIntoShopController(c *gin.Context) {
 		user = new(models.APIUSERADDPRODUCTS)
 	)
 	err := c.ShouldBind(&user)
+	log.Print("malik montana", user)
 	if err != nil {
 		log.Print(errorCodes.COULDNOTBIND)
 		c.JSON(400, err)
 	} else {
+
 		_, _, apikey, err := webtoken.GetValidTokenValue(user.Token)
 		if err != nil {
 			log.Print(err)
@@ -188,6 +190,7 @@ func InsertProductsIntoShopController(c *gin.Context) {
 			log.Print(err)
 			c.JSON(400, err)
 		} else {
+
 			c.JSON(200, "inserted")
 		}
 	}
@@ -196,6 +199,7 @@ func GetItemDetails(c *gin.Context) {
 	var (
 		product = new(models.QueryProduct)
 	)
+
 	err := c.ShouldBind(&product)
 	if err != nil {
 		log.Print(errorCodes.COULDNOTBIND)
