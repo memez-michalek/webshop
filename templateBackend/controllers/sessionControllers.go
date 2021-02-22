@@ -27,8 +27,8 @@ func LoginController(c *gin.Context){
 			log.Print("login data wasnt verified: ", err)
 			c.JSON(404, err)
 		}else{
+			c.JSON(200, "loggedin")
 
-			
 		}
 
 	}

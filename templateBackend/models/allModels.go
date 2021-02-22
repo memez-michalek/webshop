@@ -1,6 +1,13 @@
 package allModels
 
+import "github.com/dgrijalva/jwt-go"
+
 type User struct {
-	Username string `json:"username"`
+	Email    string `json:"email"`
 	Password string `json:"password"`
+}
+type Auth struct {
+	Email    string
+	Password string
+	Claims   jwt.StandardClaims
 }
