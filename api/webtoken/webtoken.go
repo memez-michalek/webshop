@@ -22,7 +22,7 @@ func CreateToken(username string, email string, apikey string) (string, error) {
 		email,
 		apikey,
 		jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Duration(time.Minute * 10)).Unix(),
+			ExpiresAt: time.Now().Add(time.Duration(time.Hour * 10)).Unix(),
 			IssuedAt:  time.Now().Unix(),
 		},
 	})

@@ -11,3 +11,6 @@ type Auth struct {
 	Password string
 	Claims   jwt.StandardClaims
 }
+type VerifiedUser struct {
+	Webtoken string
+}

@@ -47,7 +47,8 @@ func (model models.User) CheckLoginData() error {
 		log.Print("could not query user", err)
 		return err
 	}
-	match := bcrypt.CompareHashAndPassword(password, []byte(model.Password))
+	match := bcrypt.CompareHashAndPassword([]byte(password, []byte(model.Password))
+	
 	if match != nil {
 		log.Print("error wrong credentials")
 		return match
