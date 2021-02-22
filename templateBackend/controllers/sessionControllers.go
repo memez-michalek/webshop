@@ -45,9 +45,39 @@ func LoginController(c *gin.Context){
 				c.JSON(403, err)
 			}
 			models.VALIDJWTTOKENS[login.Email] = token
-			c.JSON(200, "")
+			c.JSON(200, "logged in")
 
 		}
 	}
+
+}
+func RegisterController(c *gin.Context){
+	var(
+		user := new(models.User)
+	)
+	err := c.ShouldBind(&user)
+	if err != nil{
+		log.Print("could not bind to model")
+		c.JSON(400, "could not bind")
+	}else{
+		_ , exists := models.VALIDJWTTOKENS[user.Email]
+			if exists{
+				log.Print("you are already logged in")
+				c.JSON(403, "already logged in")
+			}
+	
+		err := user.RegisterUser()
+		if err != nil{
+			log.Print("bad user credentials", err)
+			c.JSON(403, "could not log in")
+		}
+		token, err := helpers.CreateToken(user.Email, user.Password)
+		if err != nil{
+			log.Print("could not create token")
+		}
+		models.VALIDJWTTOKENS[user.Email] = token
+		c.JSON(200, "user registered")
+
+	}	
 
 }

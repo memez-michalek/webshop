@@ -22,6 +22,8 @@ func initDB() *sql.DB {
 	return db
 
 }
+
+
 func queryUser(model models.User, db *sql.DB) (string, string, error) {
 	var (
 		tempEmail    string
@@ -41,7 +43,11 @@ func queryUser(model models.User, db *sql.DB) (string, string, error) {
 }
 
 func (model models.User) CheckLoginData() error {
-	database := initDB()
+	var(
+		database := initDB()
+		
+	)
+	defer db.Close()
 	_, password, err := queryUser(model, database)
 	if err != nil {
 		log.Print("could not query user", err)
@@ -55,4 +61,28 @@ func (model models.User) CheckLoginData() error {
 	}
 	return nil
 
+}
+func (model models.User) RegisterUser() error{
+	var(
+		db := initDB()
+	)
+	defer db.Close()
+	_, _, err := queryUser(model, db)
+	if err == sql.ErrNoRows{
+		hashedpw, err := bcrypt.GenerateFromPassword([]byte(password), 12)
+		if err != nil{
+		log.Print("could not hash password")
+		return errors.Error("could not hash password")
+		}
+		_, err := db.Exec("INSERT INTO USERS(email, password)VALUES($1, $2)", model.Email, hashedpw)
+		if err != nil {
+			log.Print("could not insert data into database")
+			return errors.Error("could not insert data")
+		}
+		return nil
+
+	}else{
+		log.Print("user already exists")
+		return errors.Error("particular user already exists")
+	}
 }
