@@ -81,3 +81,15 @@ func RegisterController(c *gin.Context){
 	}	
 
 }
+func LogoutController(c *gin.Context){
+	var(
+		user := models.VerifiedUser
+	)
+	email, password, err := helpers.GetTokenValue(token)
+	if err != nil{
+		log.Print("could not get the value of token")
+		c.JSON(401, "could not get value of token")
+	}
+	delete(models.VALIDJWTTOKENS, email)
+	c.JSON(200, "logged out ")
+}
