@@ -40,8 +40,7 @@ func LogInToApi(c *gin.Context) {
 				c.JSON(200, token)
 			} else {
 				log.Print(err)
-				c.JSON(400, errorCodes.USERALREADYLOGGEDIN)
-				c.JSON(400, err)
+				c.JSON(403, token)
 			}
 		}
 	}

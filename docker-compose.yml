@@ -2,15 +2,27 @@
 version: '3'
 services:
   
-  #web:
-  #  build:
-  #    context: api
-  #  ports:
-  #    - "8000:8000"
-  #  volumes:
-  #    - "./api:/app"
-  #  depends_on: 
-  #    - database
+  web:
+    build:
+      context: api
+    ports:
+      - "8000:8000"
+    volumes:
+      - "./api:/app"
+    depends_on: 
+      - database
+
+
+  webshop:
+    build:
+      context: tback
+    ports:
+      - "8080:8080"
+    volumes:
+      - "./tback:/app"
+    depends_on: 
+      - users_database
+  
   database:
     image: "mongo"
     
@@ -36,21 +48,13 @@ services:
       retries: 5
     ports:
       - "5432:5432"
-  shopbackend:
-    build:
-      context: templateBackend
-    ports:
-      - "8080:8080"
-    volumes:
-      - "./templateBackend:/templateBackend"
-    depends_on: 
-      - users_database
-  frontend:
-    build:
-      context: frontend/react-frontend
-    ports:
-      - "3000:3000"
-    volumes:
-      - "./frontend/react-frontend:/app"
+  
+  #frontend:
+  #  build:
+  #    context: react-frontend
+  #  ports:
+  #    - "3000:3000"
+  #  volumes:
+  #    - "./react-frontend:/app"
 
     
