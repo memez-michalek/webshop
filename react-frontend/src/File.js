@@ -12,23 +12,26 @@ import axios from "axios"
 class Main extends React.Component{
     constructor(props){
         super(props)
-        this.state = {}
+        this.state = {prods: []}
     }
+    componentDidMount() {
+      axios.post("http://localhost:8080/init").then(response=>{
+    
+        const data = response.data
+        console.log(data)
+        this.setState({prods: data})
+      }).catch(err=>{
 
+        console.log(err)
+      })
+
+    }
     render(){
-        const details =  ()=>{
-            axios.post("http://localhost:8080/init").then(function(response){
-        return response
-    }).catch(function(error){
-        return error
-    })
-        }
-        
         
         return(
            
             <div>
-                <p>output {details}</p>
+                <p>{this.state.prods}</p>
 
             </div>
         )

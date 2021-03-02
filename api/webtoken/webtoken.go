@@ -10,13 +10,12 @@ import (
 	"github.com/dgrijalva/jwt-go"
 )
 
-var SECRETTOKEN = []byte("he0ErCNloe4J7Id0Ry2SEDg09lKkZkfsRiGsdX_vgEg")
+var SECRETTOKEN = []byte("fjklajfalfjop4pr90409fj03rj030f30")
 
 func CreateToken(username string, email string, apikey string) (string, error) {
 	if username == "" || email == "" || apikey == "" {
 		return "", errors.New(errorCodes.TOKENERROR)
 	}
-
 	data := jwt.NewWithClaims(jwt.SigningMethodHS256, models.JWTAUTH{
 		username,
 		email,
@@ -36,10 +35,13 @@ func CreateToken(username string, email string, apikey string) (string, error) {
 
 }
 func GetValidTokenValue(token string) (string, string, string, error) {
+	log.Print(token)
 	secret, err := jwt.ParseWithClaims(token, new(models.JWTAUTH), func(token *jwt.Token) (interface{}, error) {
 		return SECRETTOKEN, nil
 	})
+	log.Print(secret)
 	if err != nil {
+		log.Print(err)
 		log.Print("Token related error")
 		return "", "", "", errors.New(errorCodes.TOKENERROR)
 	}

@@ -7,6 +7,7 @@ import (
 	"api/webtoken"
 	"errors"
 	"log"
+	"reflect"
 
 	"github.com/gin-gonic/gin"
 )
@@ -37,6 +38,7 @@ func LogInToApi(c *gin.Context) {
 				shop.Name = shopname
 				models.SHOPLIST = append(models.SHOPLIST, *shop)
 				log.Print("shoplist", models.SHOPLIST)
+				log.Print(token)
 				c.JSON(200, token)
 			} else {
 				log.Print(err)
@@ -51,9 +53,16 @@ func MainPage(c *gin.Context) {
 	)
 	err := c.ShouldBind(&apiUSER)
 	if err != nil {
+		log.Print(apiUSER)
 		c.JSON(400, errorCodes.COULDNOTBIND)
 	} else {
-		_, _, apikey, err := webtoken.GetValidTokenValue(apiUSER.Token)
+
+		log.Print("non decoded token", apiUSER.Token)
+		typ := reflect.TypeOf(apiUSER.Token)
+		log.Print(typ)
+
+		_, _, apikey, err := webtoken.GetValidTokenValue(string(apiUSER.Token))
+		log.Print(err, "<= error     apikey =>", apikey)
 		switch {
 		case err == nil:
 
@@ -67,6 +76,7 @@ func MainPage(c *gin.Context) {
 				log.Print(err)
 				c.JSON(400, errorCodes.SHOPDOESNOTEXIST)
 			} else {
+
 				c.JSON(200, products)
 			}
 		case err.Error() == errorCodes.TOKENERROR:
@@ -78,6 +88,7 @@ func MainPage(c *gin.Context) {
 			if !removed {
 				log.Print("error while deleting")
 			}
+
 			c.JSON(400, errorCodes.TOKENERROR)
 		case err.Error() == errorCodes.TOKENEXPIRED:
 			log.Print(errorCodes.TOKENEXPIRED)

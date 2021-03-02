@@ -2,8 +2,9 @@ package handlers
 
 import (
 	"database/sql"
+	"errors"
 	"log"
-	"tback/models"
+	"tback/model"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -23,8 +24,7 @@ func initDB() *sql.DB {
 
 }
 
-
-func queryUser(model models.User, db *sql.DB) (string, string, error) {
+func queryUser(model model.User, db *sql.DB) (string, string, error) {
 	var (
 		tempEmail    string
 		tempPassword string
@@ -42,19 +42,18 @@ func queryUser(model models.User, db *sql.DB) (string, string, error) {
 
 }
 
-func (model models.User) CheckLoginData() error {
-	var(
-		database := initDB()
-		
+func CheckLoginData(model model.User) error {
+	var (
+		database = initDB()
 	)
-	defer db.Close()
+	defer database.Close()
 	_, password, err := queryUser(model, database)
 	if err != nil {
 		log.Print("could not query user", err)
 		return err
 	}
-	match := bcrypt.CompareHashAndPassword([]byte(password, []byte(model.Password))
-	
+	match := bcrypt.CompareHashAndPassword([]byte(password), []byte(model.Password))
+
 	if match != nil {
 		log.Print("error wrong credentials")
 		return match
@@ -62,27 +61,27 @@ func (model models.User) CheckLoginData() error {
 	return nil
 
 }
-func (model models.User) RegisterUser() error{
-	var(
-		db := initDB()
+func RegisterUser(model model.User) error {
+	var (
+		db = initDB()
 	)
 	defer db.Close()
 	_, _, err := queryUser(model, db)
-	if err == sql.ErrNoRows{
-		hashedpw, err := bcrypt.GenerateFromPassword([]byte(password), 12)
-		if err != nil{
-		log.Print("could not hash password")
-		return errors.Error("could not hash password")
+	if err == sql.ErrNoRows {
+		hashedpw, err := bcrypt.GenerateFromPassword([]byte(model.Password), 12)
+		if err != nil {
+			log.Print("could not hash password")
+			return errors.New("could not hash password")
 		}
-		_, err := db.Exec("INSERT INTO USERS(email, password)VALUES($1, $2)", model.Email, hashedpw)
+		_, err = db.Exec("INSERT INTO USERS(email, password)VALUES($1, $2)", model.Email, hashedpw)
 		if err != nil {
 			log.Print("could not insert data into database")
-			return errors.Error("could not insert data")
+			return errors.New("could not insert data")
 		}
 		return nil
 
-	}else{
+	} else {
 		log.Print("user already exists")
-		return errors.Error("particular user already exists")
+		return errors.New("particular user already exists")
 	}
 }

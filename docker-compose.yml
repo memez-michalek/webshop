@@ -22,6 +22,7 @@ services:
       - "./tback:/app"
     depends_on: 
       - users_database
+      - web
   
   database:
     image: "mongo"
@@ -49,12 +50,12 @@ services:
     ports:
       - "5432:5432"
   
-  #frontend:
-  #  build:
-  #    context: react-frontend
-  #  ports:
-  #    - "3000:3000"
-  #  volumes:
-  #    - "./react-frontend:/app"
+  frontend:
+    build:
+      context: react-frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - "./react-frontend:/app"
 
     

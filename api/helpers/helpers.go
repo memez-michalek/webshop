@@ -36,3 +36,6 @@ func ErrorChecker(e error) {
 		log.Print(e)
 	}
 }
+
+
+
