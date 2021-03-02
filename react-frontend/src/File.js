@@ -1,4 +1,5 @@
 import { Component } from "react";
+import GridView, {Grid} from "./Components/gridview"
 
 import React from "react"
 import ReactDOM from "react-dom"
@@ -19,7 +20,9 @@ class Main extends React.Component{
     
         const data = response.data
         console.log(data)
-        this.setState({prods: data})
+        const obj = JSON.parse(data)
+        console.log(obj)
+        this.setState({prods: obj})
       }).catch(err=>{
 
         console.log(err)
@@ -30,8 +33,11 @@ class Main extends React.Component{
         
         return(
            
-            <div>
-                <p>{this.state.prods}</p>
+            <div className="jd">
+              
+            
+            {this.state.prods.map(item=><GridView ImageUrl={item.imageUrl} Name={item.name} Price={item.price} Category={item.category} ></GridView>)}
+
 
             </div>
         )
