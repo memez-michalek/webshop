@@ -1,11 +1,11 @@
 import { Component } from "react";
 import GridView, {Grid} from "./Components/gridview"
-
+import image from "./Components/lajcior.jpg"
 import React from "react"
 import ReactDOM from "react-dom"
 import axios from "axios"
-
-
+import { BrowserRouter as Router, Link, Route, Switch } from 'react-router-dom';
+import productview from "./Components/productview"
 
 
 
@@ -32,14 +32,21 @@ class Main extends React.Component{
     render(){
         
         return(
-           
-            <div className="jd">
-              
-            
-            {this.state.prods.map(item=><GridView ImageUrl={item.imageUrl} Name={item.name} Price={item.price} Category={item.category} ></GridView>)}
+          <Router>
+            <div>
+             
+                {this.state.prods.map(item=><GridView Id={item.id}ImageUrl={item.imageUrl} Name={item.name} Price={item.price} Category={item.category} ></GridView>)}
+                
+
 
 
             </div>
+
+
+
+
+          </Router>
+          
         )
     }
 
