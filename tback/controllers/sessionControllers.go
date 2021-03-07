@@ -51,6 +51,7 @@ func LoginController(c *gin.Context) {
 	var (
 		user = new(model.User)
 	)
+	c.Header("Access-Control-Allow-Origin", "http://localhost:3000")
 	err := c.ShouldBind(&user)
 	if err != nil {
 		log.Print("access denied")
@@ -61,19 +62,15 @@ func LoginController(c *gin.Context) {
 			log.Print("login data wasnt verified: ", err)
 			c.JSON(404, err)
 		} else {
-			_, exists := model.VALIDJWTTOKENS[user.Email]
-			if exists {
-				log.Print("you are already logged in")
-				c.JSON(403, "already logged in")
-			}
+
 			token, err := helper.CreateToken(user.Email, user.Password)
 			if err != nil {
 				log.Print("could not create login token", err)
 				c.JSON(403, err)
+			} else {
+				model.VALIDJWTTOKENS[user.Email] = token
+				c.JSON(200, "logged in")
 			}
-			model.VALIDJWTTOKENS[user.Email] = token
-			c.JSON(200, "logged in")
-
 		}
 	}
 
@@ -82,16 +79,13 @@ func RegisterController(c *gin.Context) {
 	var (
 		user = new(model.User)
 	)
+	c.Header("Access-Control-Allow-Origin", "http://localhost:3000")
+	log.Print(user)
 	err := c.ShouldBind(&user)
 	if err != nil {
 		log.Print("could not bind to model")
 		c.JSON(400, "could not bind")
 	} else {
-		_, exists := model.VALIDJWTTOKENS[user.Email]
-		if exists {
-			log.Print("you are already logged in")
-			c.JSON(403, "already logged in")
-		}
 
 		err := handlers.RegisterUser(*user)
 		if err != nil {
@@ -101,9 +95,10 @@ func RegisterController(c *gin.Context) {
 		token, err := helper.CreateToken(user.Email, user.Password)
 		if err != nil {
 			log.Print("could not create token")
+		} else {
+			model.VALIDJWTTOKENS[user.Email] = token
+			c.JSON(200, "user registered")
 		}
-		model.VALIDJWTTOKENS[user.Email] = token
-		c.JSON(200, "user registered")
 
 	}
 
@@ -112,7 +107,7 @@ func LogoutController(c *gin.Context) {
 	var (
 		user = new(model.VerifiedUser)
 	)
-
+	c.Header("Access-Control-Allow-Origin", "http://localhost:3000")
 	email, _, err := helper.GetTokenValue(user.Webtoken)
 	if err != nil {
 		log.Print("could not get the value of token")

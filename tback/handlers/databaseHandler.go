@@ -6,11 +6,12 @@ import (
 	"log"
 	"tback/model"
 
+	_ "github.com/lib/pq"
 	"golang.org/x/crypto/bcrypt"
 )
 
 func initDB() *sql.DB {
-	psqlconnection := "postgres://postgres:password@localhost/db?sslmode=disable"
+	psqlconnection := "postgres://postgres:password@users_database/users?sslmode=disable"
 	db, err := sql.Open("postgres", psqlconnection)
 	if err != nil {
 		log.Print("postgres connection error", err)
@@ -29,8 +30,9 @@ func queryUser(model model.User, db *sql.DB) (string, string, error) {
 		tempEmail    string
 		tempPassword string
 	)
-
-	result := db.QueryRow("SELECT * FROM USERS WHERE email=$1", model.Email).Scan(&tempEmail, &tempPassword)
+	log.Print("email ", model.Email)
+	log.Print("password", model.Password)
+	result := db.QueryRow("SELECT email, password FROM credentials WHERE email=$1", model.Email).Scan(&tempEmail, &tempPassword)
 	switch {
 	case result == sql.ErrNoRows:
 		log.Printf("could not find particular user")
@@ -73,7 +75,7 @@ func RegisterUser(model model.User) error {
 			log.Print("could not hash password")
 			return errors.New("could not hash password")
 		}
-		_, err = db.Exec("INSERT INTO USERS(email, password)VALUES($1, $2)", model.Email, hashedpw)
+		_, err = db.Exec("INSERT INTO credentials(email, password)VALUES($1, $2)", model.Email, hashedpw)
 		if err != nil {
 			log.Print("could not insert data into database")
 			return errors.New("could not insert data")

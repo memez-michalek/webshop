@@ -6,8 +6,8 @@ import ReactDOM from "react-dom"
 import axios from "axios"
 import { BrowserRouter as Router, Link, Route, Switch } from 'react-router-dom';
 import productview from "./Components/productview"
-
-
+import TopRow from "./Components/toprow"
+import Cookies from 'universal-cookie'
 
 
 class Main extends React.Component{
@@ -30,11 +30,19 @@ class Main extends React.Component{
 
     }
     render(){
-        
+        const cookie = new Cookies()
+        console.log(cookie.get("token"))
         return(
           <Router>
             <div>
-             
+            <TopRow></TopRow>
+
+            </div>
+            
+            <div>
+
+              
+
                 {this.state.prods.map(item=><GridView Id={item.id}ImageUrl={item.imageUrl} Name={item.name} Price={item.price} Category={item.category} ></GridView>)}
                 
 
