@@ -6,7 +6,14 @@ import Productview from "./Components/productview"
 import Login from "./Components/Loginview"
 import Register from "./Components/Registerview"
 import Logout from "./Components/logoutview"
-function App() {
+import { render } from 'react-dom';
+import { resetWarningCache } from 'prop-types';
+import react from "react"
+class App extends react.Component{
+
+  
+
+  render(){
   return (
     <Router>
       
@@ -18,6 +25,7 @@ function App() {
       <Route path="/login" component={Login}/>
       <Route path="/register" component={Register}/>
       <Route path="/logout" component={Logout}></Route>
+      <Route></Route>
     </Switch>
     </Router>
 
@@ -26,6 +34,7 @@ function App() {
 
 
   );
+  }
 }
 
 export default App;
