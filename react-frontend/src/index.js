@@ -7,12 +7,18 @@ import reportWebVitals from './reportWebVitals';
 import {createStore} from "@reduxjs/toolkit"
 import reducer from './Components/redux-module/reducer-handlers';
 import {Provider} from "react-redux"
+import {PersistGate} from 'redux-persist/lib/integration/react'
+import {store, persistor} from './Components/redux-module/redux-store'
+import LoadingView from './Components/LoadingView'
 
 
-const store = createStore(reducer)
+//const store = createStore(reducer)
 ReactDOM.render(
   <Provider store={store}> 
-    <App />
+    <PersistGate loading={<LoadingView/>} persistor={persistor}>
+      <App/>
+    </PersistGate>
+    
   </Provider>,
   document.getElementById('root')
 );

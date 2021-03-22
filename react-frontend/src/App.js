@@ -9,6 +9,9 @@ import Logout from "./Components/logoutview"
 import { render } from 'react-dom';
 import { resetWarningCache } from 'prop-types';
 import react from "react"
+import About from './Components/AboutView';
+import Contact from './Components/ContactView';
+import Checkout from './Components/Checkoutview'
 class App extends react.Component{
 
   
@@ -25,7 +28,9 @@ class App extends react.Component{
       <Route path="/login" component={Login}/>
       <Route path="/register" component={Register}/>
       <Route path="/logout" component={Logout}></Route>
-      <Route></Route>
+      <Route path="/about" component={About}></Route>
+      <Route path="/contact" component={Contact}></Route>
+      <Route path="/checkout" component={Checkout}></Route>
     </Switch>
     </Router>
 

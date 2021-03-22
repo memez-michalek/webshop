@@ -14,15 +14,15 @@ import Productview from "./Components/productview"
 import Login from "./Components/Loginview"
 
 import Register from "./Components/Registerview"
-import Checkout from "./Components/views/Checkoutview"
+import Checkout from "./Components/Checkoutview"
 
 
-import store from './Components/redux-module/redux-store'
+import {store} from './Components/redux-module/redux-store'
 import {addItem} from './Components/redux-module/addItemAction'
-import {removeItems} from './Components/redux-module/removeItemAction'
 
 
-import About from "./Components/views/AboutView"
+
+import About from "./Components/AboutView"
 
 class Main extends React.Component{
     constructor(props){
@@ -30,44 +30,8 @@ class Main extends React.Component{
         this.state = {prods: []}
     }
     
-    addItems = (e) =>{
-      e.preventDefault()
-      const itemId = e.target.value
-      const items = store.getState().reducer.shoppingCart[itemId]
-      console.log(`items retrieved from the store `)
-      console.log(typeof(items))
-      
-      if (items !== undefined){
-        store.dispatch(addItem(itemId, items+1))
-      }else {
-        store.dispatch(addItem(itemId, 1))
-      }
-      
-      
-     
-    }
-    removeItems = (e) =>{
-        e.preventDefault()
-        const itemid = e.target.value
-        const currentItems = store.getState().reducer.shoppingCart
-        const copy = currentItems
-        if (currentItems[itemid]> 1){
-          store.dispatch(removeItems(itemid, currentItems[itemid]-1))  
-          
-        }else{
-          
-          store.dispatch(removeItems(itemid, 0))  
-
-        }
-       
-        
-       
   
-    }
-
-
-
-
+  
 
 
     componentDidMount() {
@@ -95,29 +59,20 @@ class Main extends React.Component{
           <div>
           <div>
           <TopRow></TopRow>
-          <Cart removeItems={this.removeItems}></Cart>
+          <Cart></Cart>
           </div>
           
           <div>
 
             
 
-              {this.state.prods.map(item=><GridView item={item} addItems={this.addItems}></GridView>)}
+              {this.state.prods.map(item=><GridView item={item} ></GridView>)}
               
             
 
 
           </div>
-          
-          <Switch>
-          
-          <Route path="/about" component={About}></Route>
-          <Route path="/product/:id" component={Productview}/>
-          <Route path="/login" component={Login}/>
-          <Route path="/register" component={Register}/>
-          <Route path="/logout" component={Logout}/>
-          
-          </Switch>
+       
          
 
         </div>
