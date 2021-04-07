@@ -6,9 +6,9 @@ var SHOPAPISECRET = struct {
 	Email    string `json:"email"`
 	Key      string `json:"key"`
 }{
-	Username: "e",
-	Email:    "e@e.com",
-	Key:      "1pG3MWsEflP7HG8hpClS62Zlmgp",
+	Username: "taco",
+	Email:    "taco@taco.com",
+	Key:      "1qUl8ylhDoUH5vmwkwEWMO2pwKX",
 }
 var SHOPAPIWEBTOKEN = ""
 

@@ -68,6 +68,7 @@ func MainPage(c *gin.Context) {
 
 			log.Print(models.SHOPLIST)
 			shop, err := database.QueryShopByApiKey(models.SHOPLIST, apikey)
+			log.Print("shop value", err)
 			if err != nil {
 				c.JSON(400, errorCodes.SHOPDOESNOTEXIST)
 			}

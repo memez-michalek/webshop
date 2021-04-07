@@ -43,29 +43,38 @@ func RemoveOrder(order models.Order, shop models.SHOP) ([]models.Order, error) {
 	return []models.Order{}, errors.New(errorCodes.ORDERDOESNOTEXIST)
 }
 
-func QueryOrder(orderfilter models.OrderFilter) (models.Order, error) {
-
+func QueryOrder(orderfilter models.OrderFilter) ([]models.Order, error) {
+	var (
+		orders = make([]models.Order, 0)
+	)
+	log.Print("order filter", orderfilter)
 	_, _, apikey, err := webtoken.GetValidTokenValue(orderfilter.Webtoken)
 	if err != nil {
 		log.Print(err)
-		return models.Order{}, err
+		return []models.Order{}, err
 	}
 	queryshop, err := QueryShopByApiKey(models.SHOPLIST, apikey)
 	if err != nil {
 		log.Print(err)
-		return models.Order{}, err
+		return []models.Order{}, err
 	}
 	shop, err := QueryShop(queryshop)
 	if err != nil {
 		log.Print(err)
-		return models.Order{}, err
+		return []models.Order{}, err
 	}
-	order, err := GetOrder(shop, orderfilter.OrderId)
-	if err != nil {
-		log.Print(err)
-		return models.Order{}, err
+
+	for id := range orderfilter.OrderId {
+		order, err := GetOrder(shop, orderfilter.OrderId[id])
+		log.Print(order, "order")
+		if err != nil {
+			log.Print(err)
+			log.Print("order error")
+		}
+		orders = append(orders, order)
+
 	}
-	return order, nil
+	return orders, nil
 }
 func AddOrder(shopId string, order models.Order) error {
 	var (
@@ -89,11 +98,11 @@ func AddOrder(shopId string, order models.Order) error {
 	}
 }
 
-func MakeOrder(queryOrder *models.QueryOrder) (models.Order, error) {
+func MakeOrder(queryOrder models.QueryOrder) (models.Order, error) {
 	var (
 		order = new(models.Order)
 	)
-	queryShop, err := GetQueryShop(*queryOrder)
+	queryShop, err := GetQueryShop(queryOrder)
 
 	shop, err := QueryShop(queryShop)
 	if err != nil {
@@ -115,17 +124,21 @@ func GetQueryShop(queryOrder models.QueryOrder) (models.QUERYShop, error) {
 
 	_, _, apikey, err := webtoken.GetValidTokenValue(queryOrder.Webtoken)
 	if err != nil {
+		log.Print("wyjebalem sie")
 		log.Print(errorCodes.TOKENEXPIRED)
 		return models.QUERYShop{}, err
 	}
+	log.Print("apikey", apikey)
+	log.Print("shoplist", models.SHOPLIST)
 	queryshop, err := QueryShopByApiKey(models.SHOPLIST, apikey)
+	log.Print("queryshop", queryshop)
 	if err != nil {
 		log.Print(err)
 		return models.QUERYShop{}, err
 	}
 	return queryshop, nil
 }
-func DeleteOrder(order models.Order, Webtoken string) error {
+func DeleteOrder(order []models.Order, Webtoken string) error {
 	var (
 		collection = initDB("DATABASE", "SHOPS")
 		shop       = new(models.SHOP)
@@ -136,6 +149,7 @@ func DeleteOrder(order models.Order, Webtoken string) error {
 		return err
 	}
 	queryShop, err := QueryShopByApiKey(models.SHOPLIST, apikey)
+
 	if err != nil {
 		log.Print(errorCodes.TOKENEXPIRED)
 		return err
@@ -145,16 +159,21 @@ func DeleteOrder(order models.Order, Webtoken string) error {
 		log.Print(err)
 		return err
 	} else {
-		updatedOrders, err := RemoveOrder(order, *shop)
-		if err != nil {
-			log.Print(err)
-			return err
-		}
-		shop.Orders = updatedOrders
-		err = collection.FindOneAndUpdate(context.TODO(), bson.M{"shop_id": queryShop.ID}, bson.M{"$set": bson.M{"Orders": shop.Orders}}).Err()
-		if err != nil {
-			log.Print(err)
-			return err
+		log.Print("order", order)
+		for i := range order {
+			updatedOrders, err := RemoveOrder(order[i], *shop)
+			log.Print("updatedOrders", updatedOrders)
+			if err != nil {
+				log.Print(err)
+				return err
+			}
+			shop.Orders = updatedOrders
+			err = collection.FindOneAndUpdate(context.TODO(), bson.M{"shop_id": queryShop.ID}, bson.M{"$set": bson.M{"Orders": shop.Orders}}).Err()
+			if err != nil {
+				log.Print(err)
+				return err
+			}
+
 		}
 		return nil
 	}

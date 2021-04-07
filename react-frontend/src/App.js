@@ -12,6 +12,11 @@ import react from "react"
 import About from './Components/AboutView';
 import Contact from './Components/ContactView';
 import Checkout from './Components/Checkoutview'
+import Order from "./Components/Orderview"
+import AdminLogin from "./Components/AdminLogin"
+import AdminRegister from "./Components/AdminRegister"
+import AdminLogout from "./Components/AdminLogout"
+import MainSite from "./Components/AdminMainSite"
 class App extends react.Component{
 
   
@@ -31,6 +36,11 @@ class App extends react.Component{
       <Route path="/about" component={About}></Route>
       <Route path="/contact" component={Contact}></Route>
       <Route path="/checkout" component={Checkout}></Route>
+      <Route path="/orders" component={Order}></Route>
+      <Route path="/admin/login" component={AdminLogin}></Route>
+      <Route path="/admin/register" component={AdminRegister}></Route>
+      <Route path="/admin/logout" component={AdminLogout}></Route>
+      <Route path="/admin/" component={MainSite}></Route>
     </Switch>
     </Router>
 

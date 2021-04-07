@@ -12,17 +12,16 @@ class GridView extends react.Component{
 
     addItems = (e) =>{
         e.preventDefault()
-        const item = e.target.value
+        const item = this.props.item
+      
         const items = store.getState().cart.shoppingCart[item.id]
-        
-        console.log(`items retrieved from the store sentino`)
+        console.log("items")
         console.log(items)
-        console.log(item.id)
 
         if (items !== undefined){
-          store.dispatch(addItem(item, items+1))
+          store.dispatch(addItem(item,item.id, items["amount"]+1))
         }else {
-          store.dispatch(addItem(item, 1))
+          store.dispatch(addItem(item,item.id, 1))
         }
         
         
@@ -34,6 +33,7 @@ class GridView extends react.Component{
 
     render(){
         const link = "product/"+ this.props.item.id
+        const AddItem = {id: this.props.item.id, name: this.props.item.name, image: this.props.item.imageUrl, price: this.props.item.price}
         return(
             <div className="productContainer">
                 <NavLink to={link}>
@@ -46,7 +46,8 @@ class GridView extends react.Component{
             </div>
 
             </NavLink>
-            <button value={this.props.item}onClick={this.addItems}>Add to the cart</button>
+            
+            <button value={this.props.item} onClick={this.addItems}>Add to the cart</button>
            </div>
         )
     }

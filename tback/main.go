@@ -56,9 +56,20 @@ func initialConnection() {
 func main() {
 	initialConnection()
 	router := gin.Default()
-	router.POST("/init", controllers.MainSiteController)
-	router.POST("/login", controllers.LoginController)
-	router.POST("/logout", controllers.LoginController)
-	router.POST("/register", controllers.RegisterController)
+	website := router.Group("/")
+	{
+		website.POST("/init", controllers.MainSiteController)
+		website.POST("/login", controllers.LoginController)
+		website.POST("/logout", controllers.LoginController)
+		website.POST("/register", controllers.RegisterController)
+		website.POST("/makeorder", controllers.CreateOrder)
+		website.POST("/queryorder", controllers.GetOrder)
+		website.POST("/deleteorder", controllers.DeleteOrder)
+	}
+	admin := router.Group("/admin")
+	{
+		admin.POST("/login", controllers.LoginAdmin)
+		admin.POST("/register", controllers.RegisterAdmin)
+	}
 	router.Run(":8080")
 }

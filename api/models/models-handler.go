@@ -62,14 +62,12 @@ type QueryOrder struct {
 	Credentials Credentials `json:"credentials"`
 }
 type Credentials struct {
-	Name        string `json:"name"`
-	Surname     string `json:"surname"`
-	Street      string `json:"street"`
-	HouseNumber string `json:"housenumber"`
-	FlatNumber  string `json:"flatnumber"`
-	Postcode    string `json:"postcode"`
-	Phone       string `json:"phone"`
-	Email       string `json:"email"`
+	Name     string `json:"name"`
+	Surname  string `json:"surname"`
+	Address  string `json:"address"`
+	Postcode string `json:"postcode"`
+	Phone    string `json:"phone"`
+	Email    string `json:"email"`
 }
 
 type Order struct {
@@ -79,6 +77,11 @@ type Order struct {
 }
 
 type OrderFilter struct {
-	Webtoken string `json:"webtoken"`
-	OrderId  string `json:"orderid"`
+	Webtoken string   `json:"webtoken"`
+	OrderId  []string `json:"orderid"`
+}
+type QueryOrderBytes struct {
+	Webtoken    []byte      `json:"webtoken"`
+	ProductIds  []string    `json:"productids"`
+	Credentials Credentials `json:"credentials"`
 }
